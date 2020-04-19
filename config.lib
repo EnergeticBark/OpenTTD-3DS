@@ -1,0 +1,2852 @@
+
+log() {
+	if [ $1 = "1" ]; then echo "$2"; fi
+	echo "$2" >> $config_log
+}
+
+set_default() {
+	released_version="0.7.0"
+
+	ignore_extra_parameters="0"
+	# We set all kinds of defaults for params. Later on the user can override
+	# most of them; but if they don't, this default is used.
+	build=""
+	host=""
+	cc_build=""
+	cc_host=""
+	cxx_build=""
+	cxx_host=""
+	windres=""
+	strip=""
+	lipo=""
+	awk="awk"
+	os="DETECT"
+	endian="AUTO"
+	cpu_type="DETECT"
+	revision=""
+	config_log="config.log"
+	prefix_dir="/usr/local"
+	binary_dir="games"
+	data_dir="share/games/openttd"
+	doc_dir="1"
+	icon_dir="share/pixmaps"
+	icon_theme_dir="1"
+	personal_dir="1"
+	shared_dir="1"
+	install_dir="/"
+	man_dir="1"
+	menu_dir="1"
+	menu_group="Game;"
+	menu_name="OpenTTD"
+	binary_name="openttd"
+	enable_debug="0"
+	enable_desync_debug="0"
+	enable_profiling="0"
+	enable_dedicated="0"
+	enable_network="1"
+	enable_static="1"
+	enable_translator="0"
+	enable_unicode="1"
+	enable_assert="0"
+	enable_strip="1"
+	enable_universal="1"
+	enable_osx_g5="0"
+	enable_cocoa_quartz="1"
+	enable_cocoa_quickdraw="1"
+	with_osx_sysroot="1"
+	with_application_bundle="1"
+	with_menu_entry="1"
+	with_allegro="1"
+	with_sdl="1"
+	with_cocoa="1"
+	with_zlib="1"
+	with_png="1"
+	with_makedepend="1"
+	with_direct_music="1"
+	with_sort="1"
+	with_iconv="1"
+	with_midi=""
+	with_midi_arg=""
+	with_libtimidity="1"
+	with_freetype="1"
+	with_fontconfig="1"
+	with_icu="1"
+	with_psp_config="1"
+	with_threads="1"
+	with_distcc="1"
+	with_ccache="1"
+
+	save_params_array="
+		build
+		host
+		cc_build
+		cc_host
+		cxx_build
+		cxx_host
+		windres
+		strip
+		lipo
+		awk
+		os
+		endian
+		cpu_type
+		revision
+		config_log
+		prefix_dir
+		binary_dir
+		data_dir
+		doc_dir
+		icon_dir
+		icon_theme_dir
+		man_dir
+		menu_dir
+		personal_dir
+		shared_dir
+		install_dir
+		menu_group
+		menu_name
+		binary_name
+		enable_debug
+		enable_desync_debug
+		enable_profiling
+		enable_dedicated
+		enable_network
+		enable_static
+		enable_translator
+		enable_unicode
+		enable_assert
+		enable_strip
+		enable_universal
+		enable_osx_g5
+		enable_cocoa_quartz
+		enable_cocoa_quickdraw
+		with_osx_sysroot
+		with_application_bundle
+		with_allegro
+		with_sdl
+		with_cocoa
+		with_zlib
+		with_png
+		with_makedepend
+		with_direct_music
+		with_sort
+		with_iconv
+		with_midi
+		with_midi_arg
+		with_libtimidity
+		with_freetype
+		with_fontconfig
+		with_icu
+		with_psp_config
+		with_threads
+		with_distcc
+		with_ccache
+	CC CXX CFLAGS LDFLAGS"
+}
+
+detect_params() {
+	# Walk over all params from the user and override any default settings if
+	#  needed. This also handles any invalid option.
+	for p in "$@"; do
+		if [ -n "$prev_p" ]; then
+			eval "$prev_p=\$p"
+			prev_p=
+			continue
+		fi
+
+		optarg=`expr "x$p" : 'x[^=]*=\(.*\)'`
+
+		case "$p" in
+			--help | -h | -\?)            showhelp; exit 0;;
+
+			--config-log)                 prev_p="config_log";;
+			--config-log=*)               config_log="$optarg";;
+
+			--build)                      prev_p="build";;
+			--build=*)                    build="$optarg";;
+
+			--host)                       prev_p="host";;
+			--host=*)                     host="$optarg";;
+
+			--os)                         prev_p="os";;
+			--os=*)                       os="$optarg";;
+
+			--cpu-type)                   prev_p="cpu_type";;
+			--cpu-type=*)                 cpu_type="$optarg";;
+
+			--revision=*)                 revision="$optarg";;
+
+			--cc-build)                   prevp_p="cc_build";;
+			--cc-build=*)                 cc_build="$optarg";;
+			--cc-host)                    prevp_p="cc_host";;
+			--cc-host=*)                  cc_host="$optarg";;
+			--cxx-build)                  prevp_p="cxx_build";;
+			--cxx-build=*)                cxx_build="$optarg";;
+			--cxx-host)                   prevp_p="cxx_host";;
+			--cxx-host=*)                 cxx_host="$optarg";;
+			--windres)                    prevp_p="windres";;
+			--windres=*)                  windres="$optarg";;
+			--awk)                        prevp_p="awk";;
+			--awk=*)                      awk="$optarg";;
+			--strip)                      prevp_p="strip";;
+			--strip=*)                    strip="$optarg";;
+			--lipo)                       prevp_p="lipo";;
+			--lipo=*)                     lipo="$optarg";;
+
+			--endian)                     prev_p="endian";;
+			--endian=*)                   endian="$optarg";;
+
+
+
+			--prefix-dir)                 prevp_p="prefix-dir";;
+			--prefix-dir=*)               prefix_dir="$optarg";;
+
+			--binary-dir)                 prevp_p="binary-dir";;
+			--binary-dir=*)               binary_dir="$optarg";;
+
+			--data-dir)                   prevp_p="data-dir";;
+			--data-dir=*)                 data_dir="$optarg";;
+
+			--doc-dir)                    prevp_p="doc-dir";;
+			--doc-dir=*)                  doc_dir="$optarg";;
+
+			--icon-dir)                   prevp_p="icon-dir";;
+			--icon-dir=*)                 icon_dir="$optarg";;
+
+			--icon-theme-dir)             prevp_p="icon-theme-dir";;
+			--icon-theme-dir=*)           icon_theme_dir="$optarg";;
+			--without-icon-theme)         icon_theme_dir="";;
+
+			--menu-dir)                   prevp_p="menu_dir";;
+			--menu-dir=*)                 menu_dir="$optarg";;
+			--without-menu-entry)         menu_dir="";;
+
+			--menu-name)                  prevp_p="menu_name";;
+			--menu-name=*)                menu_name="$optarg";;
+
+			--binary-name)                prevp_p="binary_name";;
+			--binary-name=*)              binary_name="$optarg";;
+
+			--man-dir)                    prevp_p="man_dir";;
+			--man-dir=*)                  man_dir="$optarg";;
+
+			--personal-dir)               prevp_p="personal-dir";;
+			--personal-dir=*)             personal_dir="$optarg";;
+			--without-personal-dir)       personal_dir="";;
+
+			--shared-dir)                 prevp_p="shared-dir";;
+			--shared-dir=*)               shared_dir="$optarg";;
+			--without-shared-dir)         shared_dir="";;
+
+			--install-dir)                prevp_p="install-dir";;
+			--install-dir=*)              install_dir="$optarg";;
+
+
+
+			--menu-group)                 prevp_p="menu_group";;
+			--menu-group=*)               menu_group="$optarg";;
+
+
+
+			--enable-debug)               enable_debug="1";;
+			--enable-debug=*)             enable_debug="$optarg";;
+			--enable-desync-debug)        enable_desync_debug="1";;
+			--enable-desync-debug=*)      enable_desync_debug="$optarg";;
+			--enable-profiling)           enable_profiling="1";;
+			--enable-profiling=*)         enable_profiling="$optarg";;
+			--enable-dedicated)           enable_dedicated="1";;
+			--enable-dedicated=*)         enable_dedicated="$optarg";;
+			--enable-network=*)           enable_network="$optarg";;
+			--disable-network)            enable_network="0";;
+			--disable-static)             enable_static="0";;
+			--enable-static)              enable_static="2";;
+			--enable-static=*)            enable_static="$optarg";;
+			--disable-translator)         enable_translator="0";;
+			--enable-translator)          enable_translator="2";;
+			--enable-translator=*)        enable_translator="$optarg";;
+			--disable-assert)             enable_assert="0";;
+			--enable-assert)              enable_assert="2";;
+			--enable-assert=*)            enable_assert="$optarg";;
+			--disable-strip)              enable_strip="0";;
+			--enable-strip)               enable_strip="2";;
+			--enable-strip=*)             enable_strip="$optarg";;
+			--disable-universal)          enable_universal="0";;
+			--enable-universal)           enable_universal="2";;
+			--enable-universal=*)         enable_universal="$optarg";;
+			--disable-osx-g5)             enable_osx_g5="0";;
+			--enable-osx-g5)              enable_osx_g5="2";;
+			--enable-osx-g5=*)            enable_osx_g5="$optarg";;
+			--disable-unicode)            enable_unicode="0";;
+			--enable-unicode)             enable_unicode="2";;
+			--enable-unicode=*)           enable_unicode="$optarg";;
+
+			--disable-cocoa-quartz)       enable_cocoa_quartz="0";;
+			--enable-cocoa-quartz)        enable_cocoa_quartz="2";;
+			--enable-cocoa-quartz=*)      enable_cocoa_quartz="$optarg";;
+			--disable-cocoa-quickdraw)    enable_cocoa_quickdraw="0";;
+			--enable-cocoa-quickdraw)     enable_cocoa_quickdraw="2";;
+			--enable-cocoa-quickdraw=*)   enable_cocoa_quickdraw="$optarg";;
+
+			--with-allegro)               with_allegro="2";;
+			--without-allegro)            with_allegro="0";;
+			--with-allegro=*)             with_allegro="$optarg";;
+
+			--with-sdl)                   with_sdl="2";;
+			--without-sdl)                with_sdl="0";;
+			--with-sdl=*)                 with_sdl="$optarg";;
+
+			--with-cocoa)                 with_cocoa="2";;
+			--without-cocoa)              with_cocoa="0";;
+			--with-cocoa=*)               with_cocoa="$optarg";;
+
+			--with-zlib)                  with_zlib="2";;
+			--without-zlib)               with_zlib="0";;
+			--with-zlib=*)                with_zlib="$optarg";;
+
+			--with-png)                   with_png="2";;
+			--without-png)                with_png="0";;
+			--with-png=*)                 with_png="$optarg";;
+			--with-libpng)                with_png="2";;
+			--without-libpng)             with_png="0";;
+			--with-libpng=*)              with_png="$optarg";;
+
+			--with-libtimidity)           with_libtimidity="2";;
+			--without-libtimidity)        with_libtimidity="0";;
+			--with-libtimidity=*)         with_libtimidity="$optarg";;
+
+			--with-freetype)              with_freetype="2";;
+			--without-freetype)           with_freetype="0";;
+			--with-freetype=*)            with_freetype="$optarg";;
+			--with-libfreetype)           with_freetype="2";;
+			--without-libfreetype)        with_freetype="0";;
+			--with-libfreetype=*)         with_freetype="$optarg";;
+
+			--with-fontconfig)            with_fontconfig="2";;
+			--without-fontconfig)         with_fontconfig="0";;
+			--with-fontconfig=*)          with_fontconfig="$optarg";;
+			--with-libfontconfig)         with_fontconfig="2";;
+			--without-libfontconfig)      with_fontconfig="0";;
+			--with-libfontconfig=*)       with_fontconfig="$optarg";;
+
+			--with-icu)                   with_icu="2";;
+			--without-icu)                with_icu="0";;
+			--with-icu=*)                 with_icu="$optarg";;
+			--with-libicu)                with_icu="2";;
+			--without-libicu)             with_icu="0";;
+			--with-libicu=*)              with_icu="$optarg";;
+
+			--with-psp-config)            with_psp_config="2";;
+			--without-psp-config)         with_psp_config="0";;
+			--with-psp-config=*)          with_psp_config="$optarg";;
+
+			--with-makedepend)            with_makedepend="2";;
+			--without-makedepend)         with_makedepend="0";;
+			--with-makedepend=*)          with_makedepend="$optarg";;
+
+			--with-direct-music)          with_direct_music="2";;
+			--without-direct-music)       with_direct_music="0";;
+			--with-direct-music=*)        with_direct_music="$optarg";;
+
+			--with-sort)                  with_sort="2";;
+			--without-sort)               with_sort="0";;
+			--with-sort=*)                with_sort="$optarg";;
+
+			--with-iconv)                 with_iconv="2";;
+			--without-iconv)              with_iconv="0";;
+			--with-iconv=*)               with_iconv="$optarg";;
+
+			--with-midi=*)                with_midi="$optarg";;
+			--with-midi-arg=*)            with_midi_arg="$optarg";;
+
+			--without-distcc)             with_distcc="0";;
+			--with-distcc)                with_distcc="2";;
+			--with-distcc=*)              with_distcc="$optarg";;
+
+			--without-ccache)             with_ccache="0";;
+			--with-ccache)                with_ccache="2";;
+			--with-ccache=*)              with_ccache="$optarg";;
+
+			--without-osx-sysroot)        with_osx_sysroot="0";;
+			--with-osx-sysroot)           with_osx_sysroot="2";;
+			--with-osx-sysroot=*)         with_osx_sysroot="$optarg";;
+
+			--without-application-bundle) with_application_bundle="0";;
+			--with-application-bundle)    with_application_bundle="1";;
+			--with-application-bundle=*)  with_application_bundle="$optarg";;
+
+			--without-threads)            with_threads="0";;
+			--with-threads)               with_threads="1";;
+			--with-threads=*)             with_threads="$optarg";;
+
+			CC=* | --CC=*)                CC="$optarg";;
+			CXX=* | --CXX=*)              CXX="$optarg";;
+			CFLAGS=* | --CFLAGS=*)        CFLAGS="$optarg";;
+			LDFLAGS=* | --LDFLAGS=*)      LDFLAGS="$optarg";;
+
+			--ignore-extra-parameters)    ignore_extra_parameters="1";;
+
+			--* | -*)
+				if [ "$ignore_extra_parameters" = "0" ]; then
+					log 1 "Unknown option $p"
+					exit 1
+				else
+					log 1 "Unknown option $p ignored"
+				fi
+				;;
+		esac
+	done
+
+	if [ -n "$prev_p" ]; then
+		log 1 "configure: error: missing argument to --$prev_p"
+		exit 1
+	fi
+
+	# Clean the logfile
+	echo "" > $config_log
+}
+
+save_params() {
+	# Here we save all params, so we can later on do an exact redo of this
+	#  configuration, without having the user to re-input stuff
+
+	echo "Running configure with following options:" >> $config_log
+	echo "" >> $config_log
+
+	configure="$CONFIGURE_EXECUTABLE --ignore-extra-parameters"
+	for p in $save_params_array; do
+		eval "v=\"\$$p\""
+		p=`echo "$p" | sed 's~_~-~g;s~\n~~g;s~ ~\\ ~g'`
+		# Only save those params that aren't empty
+		configure="$configure --$p=\"$v\""
+	done
+
+	echo "$configure" >> $config_log
+	echo "$configure" > config.cache
+	echo "" >> $config_log
+}
+
+check_params() {
+	# Some params want to be in full uppercase, else they might not work as
+	# expected.. fix that here
+
+	endian=`echo $endian | tr '[a-z]' '[A-Z]'`
+	os=`echo $os | tr '[a-z]' '[A-Z]'`
+	cpu_type=`echo $cpu_type | tr '[a-z]' '[A-Z]'`
+
+	# Check if all params have valid values
+
+	# Endian only allows AUTO, LE and, BE
+	if [ -z "`echo $endian | egrep '^(AUTO|LE|BE|PREPROCESSOR)$'`" ]; then
+		log 1 "configure: error: invalid option --endian=$endian"
+		log 1 " Available options are: --endian=[AUTO|LE|BE]"
+		exit 1
+	fi
+	if [ "$endian" = "PREPROCESSOR" ] && [ "$os" != "OSX" ]; then
+		log 1 "configure: error: invalid option --endian=$endian"
+		log 1 " PREPROCESSOR is only available for OSX"
+		exit 1
+	fi
+	# OS only allows DETECT, UNIX, OSX, FREEBSD, OPENBSD, MORPHOS, BEOS, SUNOS, CYGWIN, MINGW, OS2, DOS, WINCE, and PSP
+	if [ -z "`echo $os | egrep '^(DETECT|UNIX|OSX|FREEBSD|OPENBSD|NETBSD|HPUX|MORPHOS|BEOS|SUNOS|CYGWIN|MINGW|OS2|DOS|WINCE|PSP|N3DS)$'`" ]; then
+		log 1 "configure: error: invalid option --os=$os"
+		log 1 " Available options are: --os=[DETECT|UNIX|OSX|FREEBSD|OPENBSD|NETBSD|HPUX|MORPHOS|BEOS|SUNOS|CYGWIN|MINGW|OS2|DOS|WINCE|PSP|N3DS]"
+		exit 1
+	fi
+	# cpu_type can be either 32 or 64
+	if [ -z "`echo $cpu_type | egrep '^(32|64|DETECT)$'`" ]; then
+		log 1 "configure: error: invalid option --cpu-type=$cpu_type"
+		log 1 " Available options are: --cpu-type[=DETECT|32|64]"
+		exit 1
+	fi
+	# enable_debug should be between 0 and 4
+	if [ -z "`echo $enable_debug | egrep '^[0123]$'`" ]; then
+		log 1 "configure: error: invalid option --enable-debug=$enable_debug"
+		log 1 " Available options are: --enable-debug[=0123]"
+		exit 1
+	fi
+
+	# enable_desync_debug should be between 0 and 3
+	if [ -z "`echo $enable_desync_debug | egrep '^[012]$'`" ]; then
+		log 1 "configure: error: invalid option --enable-desync-debug=$enable_desync_debug"
+		log 1 " Available options are: --enable-desync-debug[=012]"
+		exit 1
+	fi
+
+	detect_awk
+
+	detect_os
+
+	check_build
+	check_host
+
+# We might enable universal builds always on OSX targets.. but currently we don't
+#	if [ "$enable_universal" = "1" ]  && [ "$os" != "OSX" ]; then
+	if [ "$enable_universal" = "1" ]; then
+		enable_universal="0"
+	fi
+	if [ "$enable_universal" = "2" ]  && [ "$os" != "OSX" ]; then
+		log 1 "configure: error: --enable-universal only works on OSX"
+		exit 1
+	fi
+	if [ "$enable_universal" = "0" ]; then
+		log 1 "checking universal build... no"
+	else
+		log 1 "checking universal build... yes"
+	fi
+
+	# Already detected by check_build
+	log 1 "checking build cc... $cc_build"
+	log 1 "checking host cc... $cc_host"
+
+	check_cxx_build
+	check_cxx_host
+	check_windres
+	if [ "$enable_strip" != "0" ]; then
+		check_strip
+	else
+		log 1 "checking strip... disabled"
+	fi
+	check_lipo
+	check_makedepend
+	detect_cputype
+
+	if [ "$enable_static" = "1" ]; then
+		if [ "$os" = "MINGW" ] || [ "$os" = "CYGWIN" ] || [ "$os" = "MORPHOS" ] || [ "$os" = "DOS" ]; then
+			enable_static="2"
+		else
+			enable_static="0"
+		fi
+	fi
+
+	if [ "$enable_static" != "0" ]; then
+		log 1 "checking static... yes"
+
+		if [ "$os" != "MINGW" ] && [ "$os" != "CYGWIN" ] && [ "$os" != "OSX" ] && [ "$os" != "MORPHOS" ] && [ "$os" != "DOS" ]; then
+			log 1 "WARNING: static is only known to work on Windows, DOS, MacOSX and MorphOS"
+			log 1 "WARNING: use static at your own risk on this platform"
+
+			sleep 5
+		fi
+	else
+		log 1 "checking static... no"
+	fi
+
+	if [ "$enable_unicode" = "1" ]; then
+		if [ "$os" = "MINGW" ] || [ "$os" = "CYGWIN" ] || [ "$os" = "DOS" ]; then
+			enable_unicode="2"
+		else
+			enable_unicode="0"
+		fi
+	fi
+
+	if [ "$enable_unicode" != "0" ]; then
+		log 1 "checking unicode... yes"
+	else
+		log 1 "checking unicode... no"
+	fi
+
+	# Show what we configured
+	if [ "$enable_debug" = "0" ]; then
+		log 1 "using debug level... no"
+	elif [ "$enable_profiling" != "0" ]; then
+		log 1 "using debug level... profiling (debug level $enable_debug)"
+	else
+		log 1 "using debug level... level $enable_debug"
+	fi
+
+	if [ "$enable_desync_debug" = "0" ]; then
+		log 1 "using desync debug level... no"
+	else
+		log 1 "using desync debug level... level $enable_desync_debug"
+		log 1 "WARNING: desync debug functions slow down the game considerably."
+		log 1 "WARNING: use only when you are instructed to do so"
+		log 1 "         or when you know what you are doing."
+
+		sleep 5
+	fi
+
+	detect_allegro
+	detect_sdl
+	detect_cocoa
+
+	if [ "$enable_dedicated" != "0" ]; then
+		log 1 "checking GDI video driver... dedicated server, skipping"
+		log 1 "checking dedicated... found"
+
+		if [ "$enable_network" = "0" ]; then
+			log 1 "configure: error: building a dedicated server without network support is pointless"
+			exit 1
+		fi
+	else
+		if [ "$os" = "MINGW" ] || [ "$os" = "CYGWIN" ] || [ "$os" = "WINCE" ]; then
+			log 1 "checking GDI video driver... found"
+		else
+			log 1 "checking GDI video driver... not Windows, skipping"
+		fi
+
+		if [ -z "$allegro_config" ] && [ -z "$sdl_config" ] && [ "$with_cocoa" = 0 ] && [ "$os" != "MINGW" ] && [ "$os" != "CYGWIN" ] && [ "$os" != "WINCE" ]; then
+			log 1 "configure: error: no video driver development files found"
+			log 1 " If you want a dedicated server use --enable-dedicated as parameter"
+			exit 1
+		else
+			log 1 "checking dedicated... not selected"
+		fi
+	fi
+
+	if [ "$enable_network" = "1" ] && [ "$os" = "DOS" ]; then
+		log 1 "checking network... DOS, skipping"
+		enable_network=0
+	elif [ "$enable_network" != "0" ]; then
+		log 1 "checking network... found"
+	else
+		log 1 "checking network... disabled"
+	fi
+
+	if [ "$enable_translator" != "0" ]; then
+		log 1 "checking translator... debug"
+		# -t shows TODO items, normally they are muted
+		strgen_flags="-t"
+	else
+		log 1 "checking translator... no"
+		strgen_flags=""
+	fi
+
+	if [ "$enable_assert" != "0" ]; then
+		log 1 "checking assert... enabled"
+	else
+		log 1 "checking assert... disabled"
+	fi
+
+	SCRIPT_SRC_DIR="$ROOT_DIR/src/3rdparty/squirrel/include"
+	if [ ! -d "$SCRIPT_SRC_DIR" ]; then
+		log 1 "checking 3rdparty... NOT FOUND"
+		log 1 "ERROR: please make sure you have src/3rdparty/squirrel"
+		log 1 "ERROR: you can find the source at svn://svn.openttd.org/3rdparty/squirrel"
+		exit 1
+	fi
+	log 1 "checking 3rdparty... found"
+
+	pre_detect_with_zlib=$with_zlib
+	detect_zlib
+
+	if [ "$with_zlib" = "0" ] || [ -z "$zlib" ]; then
+		log 1 "WARNING: zlib was not detected or disabled"
+		log 1 "WARNING: OpenTTD doesn't require zlib, but it does mean many features (like"
+		log 1 "WARNING: loading most savegames/scenarios, joining most servers, loading"
+		log 1 "WARNING: heightmaps, using PNG or using fonts, ...) will be disabled."
+		if [ "$pre_detect_with_zlib" = "0" ]; then
+			log 1 "WARNING: We strongly suggest you to install zlib."
+		else
+			log 1 "configure: error: no zlib detected"
+			log 1 " If you want to compile without zlib use --without-zlib as parameter"
+			exit
+		fi
+	fi
+
+	detect_png
+	detect_freetype
+	detect_fontconfig
+	detect_icu
+	detect_pspconfig
+	detect_libtimidity
+
+	if [ "$with_direct_music" != "0" ]; then
+		if [ "$os" != "MINGW" ] && [ "$os" != "CYGWIN" ]; then
+			if [ "$with_direct_music" != "1" ]; then
+				log 1 "configure: error: direct-music is only supported on Win32 targets"
+				exit 1
+			fi
+			with_direct_music="0"
+
+			log 1 "checking direct-music... not Windows, skipping"
+		else
+			check_direct_music
+		fi
+	fi
+
+	detect_sort
+
+	if [ "$os" = "OSX" ] && [ "$endian" = "AUTO" ]; then
+		endian="PREPROCESSOR"
+	fi
+
+	log 1 "checking endianess... $endian"
+
+	# Suppress language errors when there is a version defined, indicating a release
+	#  It just isn't pretty if any release produces warnings in the languages.
+	if [ -f "$ROOT_DIR/version" ]; then
+		lang_suppress="yes"
+		log 1 "suppress language errors... yes"
+	else
+		lang_suppress=""
+		log 1 "suppress language errors... no"
+	fi
+
+	if [ "$enable_debug" = "0" ] && [ "$enable_profiling" = "0" ] && [ "$enable_strip" != "0" ]; then
+		if [ "$os" = "MORPHOS" ]; then
+			strip_arg="--strip-all --strip-unneeded --remove-section .comment"
+		elif [ "$os" = "OSX" ]; then
+			strip_arg=""
+		elif [ "$os" = "OS2" ]; then
+			strip_arg=""
+			# OS2 uses strip via gcc, because it needs to be feed to emxbind
+			LDFLAGS="$LDFLAGS -s"
+		elif [ "$os" = "SUNOS" ]; then
+			# The GNU strip does know -s, the non-GNU doesn't
+			#  So try to detect it (in a bit of an ugly way)
+			strip_arg="`$strip -s strip.test 2>/dev/null && echo \"-s\"`"
+		else
+			strip_arg="-s"
+		fi
+
+		log 1 "checking stripping... $strip $strip_arg"
+	else
+		strip=""
+		log 1 "checking stripping... skipped"
+	fi
+
+	if [ "$with_distcc" = "0" ]; then
+		log 1 "checking distcc... no"
+	elif [ "$with_distcc" = "1" ]; then
+		with_distcc="0"
+
+		log 1 "checking distcc... no (only used when forced)"
+	elif [ "$with_distcc" = "2" ]; then
+		distcc="distcc"
+	else
+		distcc="$with_distcc"
+	fi
+	if [ "$with_distcc" != "0" ]; then
+		res="`$distcc --version 2>/dev/null | head -n 1 | cut -b 1-6`"
+		if [ "$res" != "distcc" ]; then
+			distcc=""
+			log 1 "checking distcc... no"
+			if [ "$with_distcc" = "2" ]; then
+				log 1 "configure: error: no distcc detected, but was forced to be used"
+				exit 1
+			fi
+			if [ "$with_distcc" != "1" ]; then
+				log 1 "configure: error: '$with_distcc' doesn't seem a distcc to me"
+				exit 1
+			fi
+		fi
+
+		log 1 "checking distcc... $distcc"
+	fi
+
+	if [ "$with_ccache" = "0" ]; then
+		log 1 "checking ccache... no"
+	elif [ "$with_ccache" = "1" ]; then
+		with_ccache="0"
+
+		log 1 "checking ccache... no (only used when forced)"
+	elif [ "$with_ccache" = "2" ]; then
+		ccache="ccache"
+	else
+		ccache="$with_ccache"
+	fi
+	if [ "$with_ccache" != "0" ]; then
+		res="`$ccache --version 2>/dev/null | head -n 1 | cut -b 1-6`"
+		if [ "$res" != "ccache" ]; then
+			ccache=""
+			log 1 "checking ccache... no"
+			if [ "$with_ccache" = "2" ]; then
+				log 1 "configure: error: no ccache detected, but was forced to be used"
+				exit 1
+			fi
+			if [ "$with_ccache" != "1" ]; then
+				log 1 "configure: error: '$with_ccache' doesn't seem a ccache to me"
+				exit 1
+			fi
+		fi
+
+		log 1 "checking ccache... $ccache"
+	fi
+
+	if [ "$os" = "DOS" ]; then
+		with_threads="0"
+	fi
+
+	if [ "$os" != "OSX" ] && [ "$with_osx_sysroot" != "0" ]; then
+		if [ "$with_osx_sysroot" = "1" ]; then
+			with_osx_sysroot="0"
+
+			log 1 "checking OSX sysroot... not OSX, skipping"
+		else
+			log 1 "configure: error: --with-osx-sysroot only works if OSX is the target"
+			exit 1
+		fi
+	fi
+
+	if [ "$with_osx_sysroot" != "0" ]; then
+		if [ "$enable_universal" = "0" ] && [ "$with_osx_sysroot" != "1" ] && [ "$with_osx_sysroot" != "2" ]; then
+			log 1 "checking OSX sysroot... $with_osx_sysroot"
+		else
+			# If autodetect and no universal, use system default
+			if [ "$with_osx_sysroot" = "1" ] && [ "$enable_universal" = "0" ]; then
+				log 1 "checking OSX sysroot... no (use system default)"
+				with_osx_sysroot="0"
+			else
+				log 1 "checking OSX sysroot... automatically"
+				with_osx_sysroot="3"
+			fi
+		fi
+	else
+		if [ "$os" = "OSX" ]; then
+			log 1 "checking OSX sysroot... no (use system default)"
+		fi
+	fi
+
+	if [ "$os" != "OSX" ] && [ "$with_application_bundle" != "0" ]; then
+		if [ "$with_application_bundle" = "1" ]; then
+			with_application_bundle="0"
+
+			log 1 "checking OSX application bundle... not OSX, skipping"
+		else
+			log 1 "configure: error: --with-application-bundle only works if OSX is the target"
+			exit 1
+		fi
+	fi
+
+	if [ "$os" = "OSX" ] && [ "$with_application_bundle" = "1" ]; then
+		OSXAPP="OpenTTD.app"
+	else
+		OSXAPP=""
+	fi
+
+	if [ "$os" = "OSX" ]; then
+		# Test on G5
+
+		if [ "$enable_osx_g5" != "0" ]; then
+			log 1 "detecting G5... yes (forced)"
+		else
+			# First, are we a real OSX system, else we can't detect it
+			native=`LC_ALL=C uname | tr '[A-Z]' '[a-z]' | grep darwin`
+			# If $host doesn't match $build , we are cross-compiling
+			if [ -n "$native" ] && [ "$build" = "$host" ]; then
+				$cxx_build $SRC_DIR/os/macosx/G5_detector.cpp -o G5_detector
+				res=`./G5_detector`
+				rm -f G5_detector
+				if [ -n "$res" ]; then
+					# This is G5, add flags for it
+					enable_osx_g5="2"
+
+					log 1 "detecting G5... yes"
+				else
+					enable_osx_g5="0"
+
+					log 1 "detecting G5... no"
+				fi
+			else
+				enable_osx_g5="0"
+
+				log 1 "detecting G5... no (cross-compiling)"
+			fi
+		fi
+	else
+		if [ "$enable_osx_g5" != "0" ]; then
+			log 1 "configure: error: OSX G5 selected, but not compiling for OSX"
+			log 1 "configure: error: either select OSX as OS, or deselect OSX G5"
+
+			exit 1
+		fi
+	fi
+
+	if [ -n "$released_version" ]; then
+		log 1 "checking revision... release ($released_version)"
+		if [ -n "$revision" ] && [ "$revision" != "$released_version" ]; then
+			log 1 "WARNING: overriding of the revision is NOT possible for releases"
+			log 1 "WARNING: the given revision is IGNORED"
+
+			sleep 5
+		fi
+		revision=$released_version
+	else
+		if [ -n "$revision" ]; then
+			log 1 "checking revision... $revision"
+			log 1 "WARNING: we do not advise you to use this setting"
+			log 1 "WARNING: in most cases it is not safe for network use"
+			log 1 "WARNING: USE WITH CAUTION!"
+
+			sleep 5
+		elif [ -f "$ROOT_DIR/version" ]; then
+			revision="`cat $ROOT_DIR/version`"
+
+			log 1 "checking revision... $revision"
+		elif [ -d "$ROOT_DIR/.svn" ] && [ -n "`svn help 2>/dev/null`" ]; then
+			revision=""
+			log 1 "checking revision... svn detection"
+		elif [ -d "$ROOT_DIR/.git" ] && [ -n "`git help 2>/dev/null`" ]; then
+			revision=""
+			log 1 "checking revision... git detection"
+		elif [ -d "$ROOT_DIR/.hg" ] && [ -n "`hg help 2>/dev/null`" ]; then
+			revision=""
+			log 1 "checking revision... hg detection"
+		else
+			revision=""
+			log 1 "checking revision... no detection"
+			log 1 "WARNING: there is no means to determine the version."
+			log 1 "WARNING: please use a subversion, mercurial, or git checkout of OpenTTD."
+			log 1 "WARNING: you can only join game servers that have been compiled without"
+			log 1 "WARNING:   version detection."
+			log 1 "WARNING: there is a great chance you desync."
+			log 1 "WARNING: USE WITH CAUTION!"
+
+			sleep 5
+		fi
+	fi
+
+	if [ "$doc_dir" = "1" ]; then
+		if [ "$os" = "UNIX" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ]; then
+			doc_dir="share/doc/openttd"
+		else
+			doc_dir="$data_dir/docs"
+		fi
+	else
+		doc_dir="`echo $doc_dir | sed 's~\([^\]\)\\\\ ~\1\\\\\\\\ ~g;s~\([^\]\) ~\1\\\\\\\\ ~g'`"
+	fi
+
+	if [ "$icon_theme_dir" = "1" ]; then
+		if [ "$os" = "UNIX" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ]; then
+			icon_theme_dir="share/icons/hicolor"
+		else
+			icon_theme_dir=""
+		fi
+	else
+		icon_theme_dir="`echo $icon_theme_dir | sed 's~\([^\]\)\\\\ ~\1\\\\\\\\ ~g;s~\([^\]\) ~\1\\\\\\\\ ~g'`"
+	fi
+
+	if [ "$personal_dir" = "1" ]; then
+		if [ "$os" = "MINGW" ] || [ "$os" = "CYGWIN" ] || [ "$os" = "WINCE" ] || [ "$os" = "DOS" ]; then
+			personal_dir="OpenTTD"
+		elif [ "$os" = "OSX" ]; then
+			personal_dir="Documents/OpenTTD"
+		else
+			personal_dir=".openttd"
+		fi
+	else
+		personal_dir="`echo $personal_dir | sed 's~\([^\]\)\\\\ ~\1\\\\\\\\ ~g;s~\([^\]\) ~\1\\\\\\\\ ~g'`"
+	fi
+
+	if [ "$shared_dir" = "1" ]; then
+		# we are using default values
+		if [ "$os" = "OSX" ]; then
+			shared_dir="/Library/Application\\\\ Support/OpenTTD"
+		else
+			shared_dir=""
+		fi
+	else
+		shared_dir="`echo $shared_dir | sed 's~\([^\]\)\\\\ ~\1\\\\\\\\ ~g;s~\([^\]\) ~\1\\\\\\\\ ~g'`"
+	fi
+
+	if [ "$man_dir" = "1" ]; then
+		# add manpage on UNIX systems
+		if [ "$os" = "UNIX" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ] || [ "$os" = "OSX" ]; then
+			man_dir="share/man/man6"
+		else
+			man_dir=""
+		fi
+	else
+		man_dir="`echo $man_dir | sed 's~\([^\]\)\\\\ ~\1\\\\\\\\ ~g;s~\([^\]\) ~\1\\\\\\\\ ~g'`"
+	fi
+
+	if [ "$menu_dir" = "1" ]; then
+		# add a freedesktop menu item only for some UNIX systems
+		if [ "$os" = "UNIX" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ]; then
+			menu_dir="share/applications"
+		else
+			menu_dir=""
+		fi
+	else
+		menu_dir="`echo $menu_dir | sed 's~\([^\]\)\\\\ ~\1\\\\\\\\ ~g;s~\([^\]\) ~\1\\\\\\\\ ~g'`"
+	fi
+
+	# "set_universal_binary_flags" needs to be before "detect_iconv"
+	set_universal_binary_flags
+	detect_iconv
+
+	if [ -n "$personal_dir" ]
+	then
+		log 1 "personal home directory... $personal_dir"
+	else
+		log 1 "personal home directory... none"
+	fi
+
+	if [ -n "$shared_dir" ]
+	then
+		log 1 "shared data directory... $shared_dir"
+	else
+		log 1 "shared data directory... none"
+	fi
+
+	if [ -n "$install_dir" ]
+	then
+		log 1 "installation directory... $install_dir"
+	else
+		log 1 "installation directory... none"
+	fi
+
+	if [ -n "$icon_theme_dir" ]
+	then
+		log 1 "icon theme directory... $icon_theme_dir"
+	else
+		log 1 "icon theme directory... none"
+	fi
+
+	if [ -n "$man_dir" ]
+	then
+		log 1 "manual page directory... $man_dir"
+	else
+		log 1 "manual page directory... none"
+	fi
+
+	if [ -n "$menu_dir" ]
+	then
+		log 1 "menu item directory... $menu_dir"
+	else
+		log 1 "menu item directory... none"
+	fi
+}
+
+make_cflags_and_ldflags() {
+	# General CFlags for BUILD
+	CFLAGS_BUILD=""
+	# General CFlags for HOST
+	CFLAGS="$CFLAGS -D$os"
+	# CFlags for HOST and C-Compiler
+	CC_FLAGS=""
+	# Libs to compile. In fact this is just LDFLAGS
+	LIBS="-lstdc++"
+	# LDFLAGS used for HOST
+	LDFLAGS="$LDFLAGS"
+
+	if [ $enable_debug = 0 ]; then
+		# No debug, add default stuff
+		OBJS_SUBDIR="release"
+		if [ "$os" = "OSX" ]; then
+			# these compilerflags makes the app run as fast as possible without making the app unstable. It works on G3 or newer
+			CFLAGS="-O3 -funroll-loops -fsched-interblock -falign-loops=16 -falign-jumps=16 -falign-functions=16 -falign-jumps-max-skip=15 -falign-loops-max-skip=15 -mdynamic-no-pic $CFLAGS"
+		else
+			if [ "$os" = "MORPHOS" ]; then
+				CFLAGS="-I/gg/os-include -noixemul -fstrict-aliasing -fexpensive-optimizations -mcpu=604 -fno-inline -mstring -mmultiple $CFLAGS"
+				LDFLAGS="$LDFLAGS -noixemul"
+			fi
+
+			CFLAGS="-O2 -fomit-frame-pointer $CFLAGS"
+		fi
+	else
+		OBJS_SUBDIR="debug"
+
+		# Each debug level reduces the optimization by a bit
+		if [ $enable_debug -ge 1 ]; then
+			CFLAGS="$CFLAGS -g -D_DEBUG -D_FORTIFY_SOURCE=2"
+			if [ "$os" = "PSP" ]; then
+				CFLAGS="$CFLAGS -G0"
+			fi
+		fi
+		if [ $enable_debug -ge 2 ]; then
+			CFLAGS="$CFLAGS -fno-inline"
+		fi
+		if [ $enable_debug -ge 3 ]; then
+			CFLAGS="$CFLAGS -O0"
+		else
+			CFLAGS="$CFLAGS -O2"
+		fi
+	fi
+
+	if [ "$enable_profiling" != "0" ]; then
+		CFLAGS="$CFLAGS -p"
+		LDFLAGS="$LDFLAGS -pg"
+	fi
+
+	if [ "$with_threads" = "0" ]; then
+		CFLAGS="$CFLAGS -DNO_THREADS"
+	fi
+
+	if [ `echo $cc_host | cut -c 1-3` = "icc" ]; then
+		# Enable some things only for certain ICC versions
+		cc_version=`$cc_host -dumpversion | cut -c 1-4`
+
+
+		if [ "$cc_version" = "10.1" ]; then
+			CFLAGS="$CFLAGS -Wno-multichar"
+		fi
+	else
+		# Enable some things only for certain GCC versions
+		cc_version=`$cc_host -dumpversion | cut -c 1,3`
+
+		if [ $cc_version -ge 29 ]; then
+			CFLAGS="$CFLAGS -Wall -Wno-multichar -Wsign-compare -Wundef"
+			CFLAGS="$CFLAGS -Wwrite-strings -Wpointer-arith"
+			CFLAGS="$CFLAGS -Wno-uninitialized"
+
+			CC_CFLAGS="$CC_CFLAGS -Wstrict-prototypes"
+		fi
+
+		gcc295=""
+		if [ "$cc_version" = 29 ]; then
+			# Make sure we mark GCC 2.95 flag for Makefile.src.in, as we
+			#  need a lovely hack there to make it compile correctly.
+			gcc295="1"
+
+			# Disable warnings about unused variables when
+			# compiling with asserts disabled
+			if [ $enable_assert -eq 0 ]; then
+				CFLAGS="$CFLAGS -Wno-unused"
+			fi
+		fi
+
+		if [ $cc_version -ge 30 ]; then
+			CFLAGS="$CFLAGS -W -Wno-unused-parameter -Wformat=2"
+			CFLAGS="$CFLAGS -Wredundant-decls"
+			# Do not warn about unused variables when building without asserts
+			if [ $enable_assert -eq 0 ]; then
+				CFLAGS="$CFLAGS -Wno-unused-variable"
+			fi
+		fi
+
+		if [ $cc_version -ge 34 ]; then
+			CC_CFLAGS="$CC_CFLAGS -Wdeclaration-after-statement -Wold-style-definition"
+		fi
+
+		if [ "$os" = "CYGWIN" ]; then
+			CFLAGS="$CFLAGS -mwin32"
+			LDFLAGS="$LDFLAGS -mwin32"
+		fi
+		if [ "$os" = "MINGW" ] || [ "$os" = "CYGWIN" ]; then
+			CFLAGS="$CFLAGS -mno-cygwin"
+			LDFLAGS="$LDFLAGS -mno-cygwin"
+		fi
+
+		if [ "$os" = "CYGWIN" ] || [ "$os" = "MINGW" ]; then
+			LDFLAGS="$LDFLAGS -Wl,--subsystem,windows"
+			LIBS="$LIBS -lws2_32 -lwinmm -lgdi32 -ldxguid -lole32"
+		fi
+
+		# GCC 4.0+ complains about that we break strict-aliasing.
+		#  On most places we don't see how to fix it, and it doesn't
+		#  break anything. So disable strict-aliasing to make the
+		#  compiler all happy.
+		if [ $cc_version -ge 40 ]; then
+			CFLAGS="$CFLAGS -fno-strict-aliasing"
+		fi
+
+		# GCC 4.2+ automatically assumes that signed overflows do
+		# not occur in signed arithmetics, whereas we are not
+		# sure that they will not happen. It furthermore complains
+		# about it's own optimized code in some places.
+		if [ $cc_version -ge 42 ]; then
+			CFLAGS="$CFLAGS -fno-strict-overflow"
+		fi
+	fi
+
+	if [ "$os" != "CYGWIN" ] && [ "$os" != "FREEBSD" ] && [ "$os" != "OPENBSD" ] && [ "$os" != "MINGW" ] && [ "$os" != "MORPHOS" ] && [ "$os" != "OSX" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ] && [ "$os" != "PSP" ] && [ "$os" != "OS2" ] && [ "$os" != "N3DS" ]; then
+		LIBS="$LIBS -lpthread"
+	fi
+
+	if [ "$os" != "CYGWIN" ] && [ "$os" != "MINGW" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ]; then
+		LIBS="$LIBS -lc"
+	fi
+	if [ "$os" = "WINCE" ]; then
+		LIBS="$LIBS -lcoredll -lcorelibc -laygshell -lws2 -e WinMainCRTStartup"
+	fi
+	if [ "$os" = "PSP" ]; then
+		CFLAGS="$CFLAGS -I`$psp_config -p`/include"
+		LDFLAGS="$LDFLAGS -L`$psp_config -p`/lib"
+
+		CFLAGS="$CFLAGS -fno-exceptions -fno-rtti -D_PSP_FW_VERSION=150"
+		LIBS="$LIBS -D_PSP_FW_VERSION=150 -lpspdebug -lpspdisplay -lpspge -lpspctrl -lpspsdk -lpspnet -lpspnet_inet -lpspnet_apctl -lpspnet_resolver -lpsputility -lpspuser -lpspkernel -lm"
+	fi
+
+	if [ "$os" = "MORPHOS" ]; then
+		# -Wstrict-prototypes generates much noise because of system headers
+		CFLAGS="$CFLAGS -Wno-strict-prototypes"
+	fi
+
+	if [ "$os" = "OPENBSD" ]; then
+		LIBS="$LIBS -pthread"
+	fi
+
+	if [ "$os" = "FREEBSD" ]; then
+		LIBS="$LIBS -lpthread"
+	fi
+
+	if [ "$os" = "OSX" ]; then
+		LDFLAGS="$LDFLAGS -framework Cocoa"
+		if [ "$enable_dedicated" = "0" ]; then
+			LIBS="$LIBS -framework QuickTime"
+		fi
+	fi
+
+	if [ "$os" = "BEOS" ]; then
+		LIBS="$LIBS -lmidi -lbe"
+	fi
+
+	# 3ds stuffs CLEAN BEFORE RELEASE
+ 	if [ "$os" = "N3DS" ]; then
+ 		CFLAGS="$CFLAGS -fno-gcse -fno-cse-follow-jumps -fpermissive -Wno-narrowing -fno-short-enums -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft -I$DEVKITPRO/libctru/include"
+ 		LIBS="$LIBS -L$DEVKITPRO/portlibs/3ds/lib -specs=3dsx.specs -g -march=armv6k -mtune=mpcore -mfloat-abi=hard -lSDL -L$DEVKITPRO/libctru/lib -lcitro3d -lctru"
+ 	fi
+
+	# Most targets act like UNIX, just with some additions
+	if [ "$os" = "BEOS" ] || [ "$os" = "OSX" ] || [ "$os" = "MORPHOS" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ] || [ "$os" = "OS2" ]; then
+		CFLAGS="$CFLAGS -DUNIX"
+	fi
+	# And others like Windows
+	if [ "$os" = "MINGW" ] || [ "$os" = "CYGWIN" ] || [ "$os" = "WINCE" ]; then
+		CFLAGS="$CFLAGS -DWIN"
+	fi
+
+	if [ -n "$allegro_config" ]; then
+		CFLAGS="$CFLAGS -DWITH_ALLEGRO"
+		CFLAGS="$CFLAGS `$allegro_config --cflags`"
+		if [ "$os" != "MINGW" ] && [ "$os" != "CYGWIN" ] && [ "$os" != "WINCE" ]; then
+			if [ "$enable_static" != "0" ]; then
+				LIBS="$LIBS `$allegro_config --static --libs`"
+			else
+				LIBS="$LIBS `$allegro_config --libs`"
+			fi
+		fi
+	fi
+
+	if [ -n "$sdl_config" ]; then
+		CFLAGS="$CFLAGS -DWITH_SDL"
+		# 3ds. Commented out whatever the line after this one did.
+ 		CFLAGS="$CFLAGS -I$DEVKITPRO/portlibs/3ds/include/SDL"
+		# SDL must not add _GNU_SOURCE as it breaks many platforms
+		# CFLAGS="$CFLAGS `$sdl_config --cflags | sed 's~-D_GNU_SOURCE[^ ]*~~'`"
+		if [ "$os" != "MINGW" ] && [ "$os" != "CYGWIN" ] && [ "$os" != "WINCE" ]; then
+			if [ "$enable_static" != "0" ]; then
+				LIBS="$LIBS `$sdl_config --static-libs`"
+			else
+				LIBS="$LIBS `$sdl_config --libs`"
+			fi
+		fi
+	fi
+
+	if [ "$with_cocoa" != "0" ]; then
+		CFLAGS="$CFLAGS -DWITH_COCOA"
+		LIBS="$LIBS -F/System/Library/Frameworks -framework Cocoa -framework Carbon -framework AudioUnit"
+
+		if [ "$enable_cocoa_quartz" != "0" ]; then
+			CFLAGS="$CFLAGS -DENABLE_COCOA_QUARTZ"
+		fi
+
+		if [ "$enable_cocoa_quickdraw" != "0" ]; then
+			CFLAGS="$CFLAGS -DENABLE_COCOA_QUICKDRAW"
+		fi
+	fi
+
+	if [ "$with_zlib" != "0" ]; then
+		if [ "$enable_static" != "0" ] && [ "$os" != "OSX" ]; then
+			LIBS="$LIBS $zlib"
+		else
+			LIBS="$LIBS -lz"
+		fi
+		CFLAGS="$CFLAGS -DWITH_ZLIB"
+	fi
+
+	# 64bit machines need -D_SQ64
+	if [ "$cpu_type" = "64" ]; then
+		CFLAGS="$CFLAGS -D_SQ64"
+	fi
+	CFLAGS="$CFLAGS -I$SCRIPT_SRC_DIR"
+
+	if [ -n "$png_config" ]; then
+		CFLAGS="$CFLAGS -DWITH_PNG"
+		CFLAGS="$CFLAGS `$png_config --cppflags --I_opts | tr '\n\r' '  '`"
+
+		# The extra flags are unneeded for latest libpng-config, but some versions are so broken...
+		if [ "$enable_static" != "0" ]; then
+			if [ "$os" = "OSX" ]; then
+				LIBS="$LIBS `$png_config --prefix`/lib/libpng.a"
+			else
+				LIBS="$LIBS `$png_config --static --ldflags | tr '\n\r' '  '`"
+			fi
+		else
+			LIBS="$LIBS `$png_config --ldflags | tr '\n\r' '  '`"
+		fi
+	fi
+
+	if [ -n "$fontconfig_config" ]; then
+		CFLAGS="$CFLAGS -DWITH_FONTCONFIG"
+		CFLAGS="$CFLAGS `$fontconfig_config --cflags | tr '\n\r' '  '`"
+
+		if [ "$enable_static" != "0" ]; then
+			if [ "$os" = "OSX" ]; then
+				# fontconfig_config goes via pkg-config on all systems, which doesn't know --prefix
+				# Also, despite the reason we link to the .a file ourself (because we can't use -static), we do need to ask pkg-config about possible other deps
+				LIBS="$LIBS `$fontconfig_config --variable=prefix`/lib/libfontconfig.a `$fontconfig_config --libs --static | sed s~-lfontconfig~~`"
+			else
+				LIBS="$LIBS `$fontconfig_config --libs --static | tr '\n\r' '  '`"
+			fi
+		else
+			LIBS="$LIBS `$fontconfig_config --libs | tr '\n\r' '  '`"
+		fi
+	fi
+
+	if [ -n "$freetype_config" ]; then
+		CFLAGS="$CFLAGS -DWITH_FREETYPE"
+		CFLAGS="$CFLAGS `$freetype_config --cflags | tr '\n\r' '  '`"
+
+		if [ "$enable_static" != "0" ]; then
+			if [ "$os" = "OSX" ]; then
+				LIBS="$LIBS `$freetype_config --prefix`/lib/libfreetype.a"
+			else
+				# Is it possible to do static with freetype, if so: how?
+				LIBS="$LIBS `$freetype_config --libs | tr '\n\r' '  '`"
+			fi
+		else
+			LIBS="$LIBS `$freetype_config --libs | tr '\n\r' '  '`"
+		fi
+	fi
+
+	if [ -n "$icu_config" ]; then
+		CFLAGS="$CFLAGS -DWITH_ICU"
+		CFLAGS="$CFLAGS `$icu_config --cppflags | tr '\n\r' '  '`"
+
+		LIBS="$LIBS `$icu_config --ldflags-libsonly | tr '\n\r' '  '`"
+	fi
+
+
+	if [ "$with_direct_music" != "0" ]; then
+		CFLAGS="$CFLAGS -DWIN32_ENABLE_DIRECTMUSIC_SUPPORT"
+		# GCC 4.0+ doesn't like the DirectX includes (gives tons of
+		#  warnings on it we won't be able to fix). For now just
+		#  suppress those warnings.
+		if [ $cc_version -ge 40 ]; then
+			CFLAGS="$CFLAGS -Wno-non-virtual-dtor"
+		fi
+	fi
+
+	if [ -n "$libtimidity" ]; then
+		if [ "$enable_static" != "0" ]; then
+			LIBS="$LIBS $libtimidity"
+		else
+			LIBS="$LIBS -ltimidity"
+		fi
+		CFLAGS="$CFLAGS -DLIBTIMIDITY"
+	fi
+
+	if [ "$with_iconv" != "0" ]; then
+		CFLAGS="$CFLAGS -DWITH_ICONV"
+		if [ "$link_to_iconv" = "yes" ]; then
+			LIBS="$LIBS -liconv"
+			if [ "$with_iconv" != "2" ]; then
+				CFLAGS="$CFLAGS -I$with_iconv/include"
+				LIBS="$LIBS -L$with_iconv/lib"
+			fi
+		fi
+
+		if [ "$have_broken_iconv" != "no" ]; then
+			CFLAGS="$CFLAGS -DHAVE_BROKEN_ICONV"
+		fi
+	fi
+
+	if [ -n "$with_midi" ]; then
+		CFLAGS="$CFLAGS -DEXTERNAL_PLAYER=\\\\\"$with_midi\\\\\""
+	fi
+	if [ -n "$with_midi_arg" ]; then
+		CFLAGS="$CFLAGS -DMIDI_ARG=\\\\\"$with_midi_arg\\\\\""
+	fi
+
+	if [ "$enable_dedicated" != "0" ]; then
+		CFLAGS="$CFLAGS -DDEDICATED"
+	fi
+
+	if [ "$enable_unicode" != "0" ]; then
+		CFLAGS="$CFLAGS -DUNICODE -D_UNICODE"
+	fi
+
+	if [ "$enable_network" != "0" ]; then
+		CFLAGS="$CFLAGS -DENABLE_NETWORK"
+
+		if [ "$os" = "BEOS" ]; then
+			LDFLAGS="$LDFLAGS -lbind -lsocket"
+		fi
+
+		if [ "$os" = "SUNOS" ]; then
+			LDFLAGS="$LDFLAGS -lnsl -lsocket"
+		fi
+	fi
+
+	if [ "$enable_static" != "0" ]; then
+		# OSX can't handle -static in LDFLAGS
+		if [ "$os" != "OSX" ]; then
+			LDFLAGS="$LDFLAGS -static"
+		fi
+	fi
+
+	if [ "$enable_assert" = "0" ]; then
+		CFLAGS="$CFLAGS -DNDEBUG"
+	fi
+
+	if [ "$enable_desync_debug" != "0" ]; then
+		CFLAGS="$CFLAGS -DRANDOM_DEBUG"
+	fi
+
+	if [ "$enable_osx_g5" != "0" ]; then
+		CFLAGS="$CFLAGS -mtune=970 -mcpu=970 -mpowerpc-gpopt"
+	fi
+
+	if [ -n "$personal_dir" ]; then
+		CFLAGS="$CFLAGS -DWITH_PERSONAL_DIR -DPERSONAL_DIR=\\\\\"$personal_dir\\\\\""
+	fi
+
+	if [ -n "$shared_dir" ]; then
+		CFLAGS="$CFLAGS -DWITH_SHARED_DIR -DSHARED_DIR=\\\\\"$shared_dir\\\\\""
+	fi
+
+	CFLAGS="$CFLAGS -DGLOBAL_DATA_DIR=\\\\\"$prefix_dir/$data_dir\\\\\""
+
+	log 1 "using CFLAGS... $CFLAGS $CC_CFLAGS"
+	log 1 "using LDFLAGS... $LIBS $LDFLAGS"
+
+	# Makedepend doesn't like something like: -isysroot /OSX/blabla
+	#  so convert it to: -isysroot -OSX/blabla. makedepend just ignores
+	#  any - command it doesn't know, so we are pretty save.
+	# Lovely hackish, not?
+	# Btw, this almost always comes from outside the configure, so it is
+	#  not something we can control.
+	if [ "$with_makedepend" != "0" ]; then
+		cflags_makedep="` echo "$CFLAGS" | sed 's~ /~ -~g;s~-I[ ]*[^ ]*~~g'`"
+	else
+		makedepend=""
+	fi
+
+	if [ "$with_distcc" != "0" ]; then
+		cc_host="$distcc $cc_host"
+		cxx_host="$distcc $cxx_host"
+		log 1 ""
+		log 1 " NOTICE: remind yourself to use 'make -jN' to make use of distcc"
+		log 1 ""
+	fi
+
+	if [ "$with_ccache" != "0" ]; then
+		cc_host="$ccache $cc_host"
+		cxx_host="$ccache $cxx_host"
+	fi
+}
+
+check_compiler() {
+	# Params:
+	# $1 - Type for message (build / host)
+	# $2 - What to fill with the found compiler
+	# $3 - System to try
+	# $4 - Compiler to try
+	# $5 - Env-setting to try
+	# $6 - GCC alike to try
+	# $7 - CC alike to try
+	# $8 - "0" gcc, "1" g++, "2" windres, "3" strip, "4" lipo
+	# $9 - What the command is to check for
+
+	if [ -n "$3" ]; then
+		# Check for system
+		if [ -z "$6" ]; then
+			compiler="$3"
+		else
+			compiler="$3-$6"
+		fi
+		machine=`eval $compiler $9 2>/dev/null`
+		ret=$?
+		eval "$2=$compiler"
+
+		log 2 "executing $compiler $9"
+		log 2 "  returned $machine"
+		log 2 "  exit code $ret"
+
+		if ( [ -z "$machine" ] && [ "$8" != "3" ] ) || [ "$ret" != "0" ]; then
+			log 1 "checking $1... $compiler not found"
+			log 1 "I couldn't detect any $6 binary for $3"
+			exit 1
+		fi
+
+		if [ "$machine" != "$3" ] && ( [ "$8" = "0" ] || [ "$8" = "1" ] ); then
+			log 1 "checking $1... expected $3, found $machine"
+			log 1 "the compiler suggests it doesn't build code for the machine you specified"
+			# 3ds. I don't know why it "suggests it doesn't build code for the machine you specified" but it works so I comment the exit out.
+ 			#exit 1
+		fi
+	elif [ -n "$4" ]; then
+		# Check for manual compiler
+		machine=`$4 $9 2>/dev/null`
+		ret=$?
+		eval "$2=$4"
+
+		log 2 "executing $4 $9"
+		log 2 "  returned $machine"
+		log 2 "  exit code $ret"
+
+		if ( [ -z "$machine" ] && [ "$8" != "3" ] ) || [ "$ret" != "0" ]; then
+			log 1 "checking $1... $4 not found"
+			log 1 "the selected binary doesn't seem to be a $6 binary"
+			exit 1
+		fi
+	else
+		# Nothing given, autodetect
+
+		if [ -n "$5" ]; then
+			machine=`$5 $9 2>/dev/null`
+			ret=$?
+			eval "$2=$5"
+
+			log 2 "executing $5 $9"
+			log 2 "  returned $machine"
+			log 2 "  exit code $ret"
+
+			# The user defined a GCC that doesn't reply to $9.. abort
+			if ( [ -z "$machine" ] && [ "$8" != "3" ] ) || [ "$ret" != "0" ]; then
+				log 1 "checking $1... $5 unusable"
+				log 1 "the CC environment variable is set, but it doesn't seem to be a $6 binary"
+				log 1 "please redefine the CC/CXX environment to a $6 binary"
+				exit 1
+			fi
+		else
+			log 2 "checking $1... CC/CXX not set (skipping)"
+
+			# No $5, so try '$6'
+			machine=`$6 $9 2>/dev/null`
+			ret=$?
+			eval "$2=$6"
+
+			log 2 "executing $6 $9"
+			log 2 "  returned $machine"
+			log 2 "  exit code $ret"
+
+			if ( [ -z "$machine" ] && [ "$8" != "3" ] ) || [ "$ret" != "0" ]; then
+				# Maybe '$7'?
+				machine=`$7 $9 2>/dev/null`
+				ret=$?
+				eval "$2=$7"
+
+				log 2 "executing $7 $9"
+				log 2 "  returned $machine"
+				log 2 "  exit code $ret"
+
+				# All failed, abort
+				if [ -z "$machine" ]; then
+					log 1 "checking $1... $6 not found"
+					log 1 "I couldn't detect any $6 binary on your system"
+					log 1 "please define the CC/CXX environment to where it is located"
+
+					exit 1
+				fi
+			fi
+		fi
+	fi
+
+	if [ "$8" != "0" ]; then
+		eval "res=\$$2"
+		log 1 "checking $1... $res"
+	else
+		log 1 "checking $1... $machine"
+	fi
+}
+
+check_build() {
+	if [ "$os" = "FREEBSD" ]; then
+		# FreeBSD's C compiler does not support dump machine.
+		# However, removing C support is not possible because PSP must be linked with the C compiler.
+		check_compiler "build system type" "cc_build" "$build" "$cc_build" "$CXX" "g++" "c++" "0" "-dumpmachine"
+	else
+		check_compiler "build system type" "cc_build" "$build" "$cc_build" "$CC" "gcc" "cc" "0" "-dumpmachine"
+	fi
+}
+
+check_host() {
+	# By default the host is the build
+	if [ -z "$host" ]; then host="$build"; fi
+
+	if [ "$os" = "FREEBSD" ]; then
+		# FreeBSD's C compiler does not support dump machine.
+		# However, removing C support is not possible because PSP must be linked with the C compiler.
+		check_compiler "host system type" "cc_host" "$host" "$cc_host" "$CXX" "g++" "c++" "0" "-dumpmachine"
+	else
+		check_compiler "host system type" "cc_host" "$host" "$cc_host" "$CC" "gcc" "cc" "0" "-dumpmachine"
+	fi
+}
+
+check_cxx_build() {
+	check_compiler "build c++" "cxx_build" "$build" "$cxx_build" "$CXX" "g++" "c++" 1 "-dumpmachine"
+}
+
+check_cxx_host() {
+	# By default the host is the build
+	if [ -z "$host" ]; then host="$build"; fi
+	check_compiler "host c++" "cxx_host" "$host" "$cxx_host" "$CXX" "g++" "c++" 1 "-dumpmachine"
+}
+
+check_windres() {
+	if [ "$os" = "MINGW" ] || [ "$os" = "CYGWIN" ] || [ "$os" = "WINCE" ]; then
+		check_compiler "host windres" "windres" "$host" "$windres" "$WINDRES" "windres" "windres" "2" "-V"
+	fi
+}
+
+check_strip() {
+	if [ "$os" = "OS2" ]; then
+		# OS2 via gcc is a bit weird.. stripping HAS to be done via emxbind, which is via gcc directly
+		log 1 "checking host strip... using gcc -s option"
+	elif [ "$os" = "OSX" ]; then
+		# Most targets have -V in strip, to see if they exists... OSX doesn't.. so execute something
+		echo "int main(int argc, char *argv[]) { }" > strip.test.c
+		$cc_host strip.test.c -o strip.test
+		check_compiler "host strip" "strip" "$host" "$strip" "$STRIP" "strip" "strip" "3" "strip.test"
+		rm -f strip.test.c strip.test
+	else
+		check_compiler "host strip" "strip" "$host" "$strip" "$STRIP" "strip" "strip" "3" "-V"
+	fi
+}
+
+check_lipo() {
+	if [ "$os" = "OSX" ] && [ "$enable_universal" != "0" ]; then
+		echo "int main(int argc, char *argv[]) { }" > lipo.test.c
+		$cc_host lipo.test.c -o lipo.test
+		check_compiler "host lipo" "lipo" "$host" "$lipo" "$LIPO" "lipo" "lipo" "4" "-info lipo.test"
+		rm -f lipo.test.c lipo.test
+	fi
+}
+
+set_universal_binary_flags() {
+	if [ -z "$osx_target_version" ]; then
+		# if we don't speficy a target version then we presume 10.4
+		osx_target_version=10.4
+	fi
+
+	if [ "$osx_target_version" = "10.4" ]; then
+		# Apple added u to 10.4 to show that it's universal
+		# There is a version without the u, but it's only in Xcode 2.0 and people should use the free update to 2.5
+		osx_sysroot_version=10.4u
+	else
+		osx_sysroot_version="$osx_target_version"
+	fi
+
+	if [ "$with_osx_sysroot" = "3" ]; then
+		CFLAGS="$CFLAGS -isysroot /Developer/SDKs/MacOSX$osx_sysroot_version.sdk -mmacosx-version-min=$osx_target_version"
+		LDFLAGS="$LDFLAGS -Wl,-syslibroot,/Developer/SDKs/MacOSX$osx_sysroot_version.sdk -mmacosx-version-min=$osx_target_version"
+	fi
+}
+
+check_direct_music() {
+	echo "
+		#include <windows.h>
+		#include <dmksctrl.h>
+		#include <dmusici.h>
+		#include <dmusicc.h>
+		#include <dmusicf.h>
+		int main(int argc, char *argv[]) { }" > direct_music.test.c
+	$cxx_host $CFLAGS direct_music.test.c -o direct_music.test 2> /dev/null
+	res=$?
+	rm -f direct_music.test.c direct_music.test
+
+	if [ "$res" != "0" ]; then
+		if [ "$with_direct_music" != "1" ]; then
+			log 1 "configure: error: direct-music is not available on this system"
+			exit 1
+		fi
+		with_direct_music="0"
+
+		log 1 "checking direct-music... not found"
+	else
+		log 1 "checking direct-music... found"
+	fi
+}
+
+check_makedepend() {
+	if [ "$with_makedepend" = "0" ]; then
+		log 1 "checking makedepend... disabled"
+		return
+	fi
+
+	if [ "$with_makedepend" = "1" ] || [ "$with_makedepend" = "2" ]; then
+		makedepend="makedepend"
+	else
+		makedepend="$with_makedepend"
+	fi
+
+	rm -f makedepend.tmp
+	touch makedepend.tmp
+	res=`$makedepend -fmakedepend.tmp 2>/dev/null`
+	res=$?
+	log 2 "executing $makedepend -f makedepend.tmp"
+	log 2 "  returned `cat makedepend.tmp`"
+	log 2 "  exit code $ret"
+
+	if [ ! -s makedepend.tmp ]; then
+		rm -f makedepend.tmp makedepend.tmp.bak
+
+		if [ "$with_makedepend" = "2" ]; then
+			log 1 "checking makedepend... not found"
+
+			log 1 "I couldn't detect any makedepend on your system"
+			log 1 "please locate it via --makedepend=[binary]"
+
+			exit 1
+		elif [ "$with_makedepend" != "1" ]; then
+			log 1 "checking makedepend... $makedepend not found"
+
+			log 1 "the selected file doesn't seem to be a valid makedepend binary"
+
+			exit 1
+		else
+			log 1 "checking makedepend... not found"
+
+			with_makedepend="0"
+			return
+		fi
+	fi
+
+	rm -f makedepend.tmp makedepend.tmp.bak
+
+	log 1 "checking makedepend... $makedepend"
+}
+
+detect_awk() {
+	# Not all awks allow gsub(), so we test for that here! It is in fact all we need...
+
+	# These awks are known to work. Test for them explicit
+	awks="gawk mawk nawk"
+
+	awk_prefix="echo \"a.c b.c c.c\" | tr ' ' \\\\n | "
+	awk_param="' { ORS = \" \" } /\.c$/   { gsub(\".c$\",   \".o\", \$0); print \$0; }' 2>/dev/null"
+	awk_result="a.o b.o c.o "
+	log 2 "Detecing awk..."
+
+	log 2 "Trying: $awk_prefix $awk $awk_param"
+	res=`eval $awk_prefix $awk $awk_param`
+	log 2 "Result: '$res'"
+	if [ "$res" != "$awk_result" ] && [ "$awk" = "awk" ]; then
+		# User didn't supply his own awk, so try to detect some other known working names for an awk
+		for awk in $awks; do
+			log 2 "Trying: $awk_prefix $awk $awk_param"
+			res=`eval $awk_prefix $awk $awk_param`
+			log 2 "Result: '$res'"
+			if [ "$res" = "$awk_result" ]; then break; fi
+		done
+
+		if [ "$res" != "$awk_result" ]; then
+			log 1 "checking awk... not found"
+			log 1 "configure: error: no awk found"
+			log 1 "configure: error: please install one of the following: $awks"
+			exit 1
+		fi
+	fi
+	if [ "$res" != "$awk_result" ]; then
+		log 1 "checking awk... not found"
+		log 1 "configure: error: you supplied '$awk' but it doesn't seem a valid gawk or mawk"
+		exit 1
+	fi
+
+	log 1 "checking awk... $awk"
+}
+
+detect_os() {
+	if [ "$os" = "DETECT" ]; then
+		# Detect UNIX, OSX, FREEBSD, OPENBSD, NETBSD, HPUX, MORPHOS, BEOS, SUNOS, CYGWIN, MINGW, OS2, DOS, WINCE, and PSP
+
+		# Try first via dumpmachine, then via uname
+		os=`echo "$host" | tr '[A-Z]' '[a-z]' | $awk '
+					/linux/        { print "UNIX";    exit}
+					/darwin/       { print "OSX";     exit}
+					/freebsd/      { print "FREEBSD"; exit}
+					/openbsd/      { print "OPENBSD"; exit}
+					/netbsd/       { print "NETBSD";  exit}
+					/hp-ux/        { print "HPUX";    exit}
+					/morphos/      { print "MORPHOS"; exit}
+					/beos/         { print "BEOS";    exit}
+					/sunos/        { print "SUNOS";   exit}
+					/solaris/      { print "SUNOS";   exit}
+					/cygwin/       { print "CYGWIN";  exit}
+					/mingw/        { print "MINGW";   exit}
+					/os2/          { print "OS2";     exit}
+					/dos/          { print "DOS";     exit}
+					/wince/        { print "WINCE";   exit}
+					/psp/          { print "PSP";     exit}
+		'`
+
+		if [ -z "$os" ]; then
+			os=`LC_ALL=C uname | tr '[A-Z]' '[a-z]' | $awk '
+					/linux/        { print "UNIX";    exit}
+					/darwin/       { print "OSX";     exit}
+					/freebsd/      { print "FREEBSD"; exit}
+					/openbsd/      { print "OPENBSD"; exit}
+					/netbsd/       { print "NETBSD";  exit}
+					/hp-ux/        { print "HPUX";    exit}
+					/morphos/      { print "MORPHOS"; exit}
+					/beos/         { print "BEOS";    exit}
+					/sunos/        { print "SUNOS";   exit}
+					/cygwin/       { print "CYGWIN";  exit}
+					/mingw/        { print "MINGW";   exit}
+					/os\/2/        { print "OS2";     exit}
+			'`
+		fi
+
+		if [ -z "$os" ]; then
+			log 1 "detecting OS... none detected"
+			log 1 "I couldn't detect your OS. Please use --os=OS to force one"
+			log 1 "Allowed values are: UNIX, OSX, FREEBSD, OPENBSD, NETBSD, MORPHOS, HPUX, BEOS, SUNOS, CYGWIN, MINGW, OS2, DOS, WINCE, and PSP"
+			exit 1
+		fi
+
+		log 1 "detecting OS... $os"
+	else
+		log 1 "forcing OS... $os"
+	fi
+}
+
+detect_allegro() {
+	# 0 means no, 1 is auto-detect, 2 is force
+	if [ "$with_allegro" = "0" ]; then
+		log 1 "checking Allegro... disabled"
+
+		allegro_config=""
+		return 0
+	fi
+
+	if [ "$with_allegro" = "2" ] && [ "$with_cocoa" = "2" ]; then
+		log 1 "configure: error: it is impossible to compile both Allegro and COCOA"
+		log 1 "configure: error: please deselect one of them and try again"
+		exit 1
+	fi
+
+	if [ "$with_allegro" = "2" ] && [ "$enable_dedicated" != "0" ]; then
+		log 1 "configure: error: it is impossible to compile a dedicated with Allegro"
+		log 1 "configure: error: please deselect one of them and try again"
+		exit 1
+	fi
+
+	if [ "$enable_dedicated" != "0" ]; then
+		log 1 "checking Allegro... dedicated server, skipping"
+
+		allegro_config=""
+		return 0
+	fi
+
+	# By default on OSX we don't use SDL. The rest is auto-detect
+	if [ "$with_allegro" = "1" ] && [ "$os" = "OSX" ] && [ "$with_cocoa" != "0" ]; then
+		log 1 "checking Allegro... OSX, skipping"
+
+		allegro_config=""
+		return 0
+	fi
+
+	if [ "$with_allegro" = "1" ] || [ "$with_allegro" = "" ] || [ "$with_allegro" = "2" ]; then
+		allegro_config="allegro-config"
+	else
+		allegro_config="$with_allegro"
+	fi
+
+	version=`$allegro_config --version 2>/dev/null`
+	ret=$?
+	log 2 "executing $allegro_config --version"
+	log 2 "  returned $version"
+	log 2 "  exit code $ret"
+
+	if [ -z "$version" ] || [ "$ret" != "0" ]; then
+		log 1 "checking Allegro... not found"
+
+		# It was forced, so it should be found.
+		if [ "$with_allegro" != "1" ]; then
+			log 1 "configure: error: allegro-config couldn't be found"
+			log 1 "configure: error: you supplied '$with_allegro', but it seems invalid"
+			exit 1
+		fi
+
+		allegro_config=""
+		return 0
+	fi
+
+	log 1 "checking Allegro... found"
+}
+
+
+detect_sdl() {
+	# 0 means no, 1 is auto-detect, 2 is force
+	if [ "$with_sdl" = "0" ]; then
+		log 1 "checking SDL... disabled"
+
+		sdl_config=""
+		return 0
+	fi
+
+	if [ "$with_sdl" = "2" ] && [ "$with_cocoa" = "2" ]; then
+		log 1 "configure: error: it is impossible to compile both SDL and COCOA"
+		log 1 "configure: error: please deselect one of them and try again"
+		exit 1
+	fi
+
+	if [ "$with_sdl" = "2" ] && [ "$enable_dedicated" != "0" ]; then
+		log 1 "configure: error: it is impossible to compile a dedicated with SDL"
+		log 1 "configure: error: please deselect one of them and try again"
+		exit 1
+	fi
+
+	if [ "$enable_dedicated" != "0" ]; then
+		log 1 "checking SDL... dedicated server, skipping"
+
+		sdl_config=""
+		return 0
+	fi
+
+	# By default on OSX we don't use SDL. The rest is auto-detect
+	if [ "$with_sdl" = "1" ] && [ "$os" = "OSX" ] && [ "$with_cocoa" != "0" ]; then
+		log 1 "checking SDL... OSX, skipping"
+
+		sdl_config=""
+		return 0
+	fi
+
+	if [ "$with_sdl" = "1" ] || [ "$with_sdl" = "" ] || [ "$with_sdl" = "2" ]; then
+		sdl_config="sdl-config"
+	else
+		sdl_config="$with_sdl"
+	fi
+
+	version=`$sdl_config --version 2>/dev/null`
+	ret=$?
+	log 2 "executing $sdl_config --version"
+	log 2 "  returned $version"
+	log 2 "  exit code $ret"
+
+	if [ -z "$version" ] || [ "$ret" != "0" ]; then
+		log 1 "checking SDL... not found"
+
+		# It was forced, so it should be found.
+		if [ "$with_sdl" != "1" ]; then
+			log 1 "configure: error: sdl-config couldn't be found"
+			log 1 "configure: error: you supplied '$with_sdl', but it seems invalid"
+			exit 1
+		fi
+
+		sdl_config=""
+		return 0
+	fi
+
+	log 1 "checking SDL... found"
+}
+
+detect_cocoa() {
+	# 0 means no, 1 is auto-detect, 2 is force
+	if [ "$with_cocoa" = "0" ]; then
+		log 1 "checking COCOA... disabled"
+
+		return 0
+	fi
+
+	if [ "$with_cocoa" = "2" ] && [ "$enable_dedicated" != "0" ]; then
+		log 1 "configure: error: it is impossible to compile a dedicated with COCOA"
+		log 1 "configure: error: please deselect one of them and try again"
+		exit 1
+	fi
+
+	if [ "$enable_dedicated" != "0" ]; then
+		log 1 "checking COCOA... dedicated server, skipping"
+
+		with_cocoa="0"
+		return 0
+	fi
+
+	# By default on OSX we use COCOA. The rest doesn't support it
+	if [ "$with_cocoa" = "1" ] && [ "$os" != "OSX" ]; then
+		log 1 "checking COCOA... not OSX, skipping"
+
+		with_cocoa="0"
+		return 0
+	fi
+
+	if [ "$os" != "OSX" ]; then
+		log 1 "checking COCOA... not OSX"
+
+		log 1 "configure: error: COCOA video driver is only supported for OSX"
+		exit 1
+	fi
+
+	log 1 "checking COCOA... found"
+
+
+	if [ "$enable_cocoa_quartz" != "0" ]; then
+		log 1 "checking whether to enable the Quartz window subdriver... yes"
+	else
+		log 1 "checking whether to enable the Quartz window subdriver... no"
+	fi
+
+	if [ "$enable_cocoa_quickdraw" != "0" ]; then
+		log 1 "checking whether to enable the Quickdraw window subdriver... yes"
+	else
+		log 1 "checking whether to enable the Quickdraw window subdriver... no"
+	fi
+}
+
+detect_library() {
+	# $1 - config-param ($with_zlib value)
+	# $2 - library name ('zlib', sets $zlib)
+	# $3 - static library name (libz.a)
+	# $4 - header name (zlib.h)
+	# $5 - force static (if non-empty)
+
+	if [ -n "$5" ]; then force_static="1"; fi
+
+	# 0 means no, 1 is auto-detect, 2 is force
+	if [ "$1" = "0" ]; then
+		log 1 "checking $2... disabled"
+
+		eval "$2=\"\""
+		return 0
+	fi
+
+	log 2 "detecting $2"
+
+	if [ "$1" = "1" ] || [ "$1" = "" ] || [ "$1" = "2" ]; then
+		eval "$2=`ls -1 /usr/include/*.h 2>/dev/null | egrep \"\/$4\$\"`"
+		eval "res=\$$2"
+		if [ -z "$res" ]; then
+			log 2 "  trying /usr/include/$4... no"
+			eval "$2=`ls -1 /usr/local/include/*.h 2>/dev/null | egrep \"\/$4\$\"`"
+		fi
+		eval "res=\$$2"
+		if [ -z "$res" ]; then
+			log 2 "  trying /usr/local/include/$4... no"
+		fi
+
+		eval "res=\$$2"
+		if [ -n "$res" ] && ( [ -n "$force_static" ] || ( [ "$enable_static" != "0" ] && [ "$os" != "OSX" ] ) ); then
+			eval "res=\$$2"
+			log 2 "  trying $res... found"
+			# Now find the static lib, if needed
+			eval "$2=`ls /lib/*.a 2>/dev/null | egrep \"\/$3\$\"`"
+			eval "res=\$$2"
+			if [ -z "$res" ]; then
+				log 2 "  trying /lib/$3... no"
+				eval "$2=`ls /usr/lib/*.a 2>/dev/null | egrep \"\/$3\$\"`"
+			fi
+			eval "res=\$$2"
+			if [ -z "$res" ]; then
+				log 2 "  trying /usr/lib/$3... no"
+				eval "$2=`ls /usr/local/lib/*.a 2>/dev/null | egrep \"\/$3\$\"`"
+			fi
+			eval "res=\$$2"
+			if [ -z "$res" ]; then
+				log 2 "  trying /usr/local/lib/$3... no"
+				log 1 "configure: error: $2 couldn't be found"
+				log 1 "configure: error: you requested a static link, but I can't find $3"
+
+				exit 1
+			fi
+		fi
+	else
+		# Make sure it exists
+		if [ -f "$1" ]; then
+			eval "$2=`ls $1 2>/dev/null`"
+		else
+			eval "$2=`ls $1/$3 2>/dev/null`"
+		fi
+	fi
+
+	eval "res=\$$2"
+	if [ -z "$res" ]; then
+		log 1 "checking $2... not found"
+		if [ "$1" = "2" ]; then
+			log 1 "configure: error: $2 couldn't be found"
+
+			exit 1
+		elif [ "$1" != "1" ]; then
+			log 1 "configure: error: $2 couldn't be found"
+			log 1 "configure: error: you supplied '$1', but it seems invalid"
+
+			exit 1
+		fi
+
+		eval "with_$2=0"
+
+		return 0
+	fi
+
+	eval "res=\$$2"
+	log 2 "  trying $res... found"
+
+	log 1 "checking $2... found"
+}
+
+detect_zlib() {
+	detect_library "$with_zlib" "zlib" "libz.a" "zlib.h"
+}
+
+detect_libtimidity() {
+	detect_library "$with_libtimidity" "libtimidity" "libtimidity.a" "timidity.h"
+}
+
+detect_png() {
+	# 0 means no, 1 is auto-detect, 2 is force
+	if [ "$with_png" = "0" ]; then
+		log 1 "checking libpng... disabled"
+
+		png_config=""
+		return 0
+	fi
+
+	if [ "$with_zlib" = "0" ] || [ -z "$zlib" ]; then
+		if [ "$with_png" != "1" ]; then
+			log 1 "checking libpng... no zlib"
+			log 1 "ERROR: libpng was forced, but zlib was not detected / disabled."
+			log 1 "ERROR: libpng depends on zlib."
+
+			exit 1
+		fi
+
+		log 1 "checking libpng... no zlib, skipping"
+
+		png_config=""
+		return 0
+	fi
+
+	if [ "$with_png" = "1" ] || [ "$with_png" = "" ] || [ "$with_png" = "2" ]; then
+		png_config="libpng-config"
+	else
+		png_config="$with_png"
+	fi
+
+	version=`$png_config --version 2>/dev/null`
+	ret=$?
+	log 2 "executing $png_config --version"
+	log 2 "  returned $version"
+	log 2 "  exit code $ret"
+
+	if [ -z "$version" ] || [ "$ret" != "0" ]; then
+		log 1 "checking libpng... not found"
+
+		# It was forced, so it should be found.
+		if [ "$with_png" != "1" ]; then
+			log 1 "configure: error: libpng-config couldn't be found"
+			log 1 "configure: error: you supplied '$with_png', but it seems invalid"
+			exit 1
+		fi
+
+		png_config=""
+		return 0
+	fi
+
+	log 1 "checking libpng... found"
+}
+
+detect_freetype() {
+	# 0 means no, 1 is auto-detect, 2 is force
+	if [ "$with_freetype" = "0" ]; then
+		log 1 "checking libfreetype... disabled"
+
+		freetype_config=""
+		return 0
+	fi
+	if [ "$with_freetype" = "1" ] && [ "$enable_dedicated" != "0" ]; then
+		log 1 "checking libfreetype... dedicated server, skipping"
+
+		freetype_config=""
+		return 0
+	fi
+
+	if [ "$with_zlib" = "0" ] || [ -z "$zlib" ]; then
+		if [ "$with_freetype" != "1" ]; then
+			log 1 "checking libfreetype... no zlib"
+			log 1 "ERROR: libfreetype was forced, but zlib was not detected / disabled."
+			log 1 "ERROR: libfreetype depends on zlib."
+
+			exit 1
+		fi
+
+		log 1 "checking libfreetype... no zlib, skipping"
+
+		freetype_config=""
+		return 0
+	fi
+
+	if [ "$with_freetype" = "1" ] || [ "$with_freetype" = "" ] || [ "$with_freetype" = "2" ]; then
+		freetype_config="freetype-config"
+	else
+		freetype_config="$with_freetype"
+	fi
+
+	version=`$freetype_config --version 2>/dev/null`
+	ret=$?
+	log 2 "executing freetype_config --version"
+	log 2 "  returned $version"
+	log 2 "  exit code $ret"
+
+	if [ -z "$version" ] || [ "$ret" != "0" ]; then
+		log 1 "checking libfreetype... not found"
+
+		# It was forced, so it should be found.
+		if [ "$with_freetype" != "1" ]; then
+			log 1 "configure: error: freetype-config couldn't be found"
+			log 1 "configure: error: you supplied '$with_freetype', but it seems invalid"
+			exit 1
+		fi
+
+		freetype_config=""
+		return 0
+	fi
+
+	log 1 "checking libfreetype... found"
+}
+
+detect_fontconfig() {
+	# 0 means no, 1 is auto-detect, 2 is force
+	if [ "$with_fontconfig" = "0" ]; then
+		log 1 "checking libfontconfig... disabled"
+
+		fontconfig_config=""
+		return 0
+	fi
+	if [ "$with_fontconfig" = "1" ] && [ "$enable_dedicated" != "0" ]; then
+		log 1 "checking libfontconfig... dedicated server, skipping"
+
+		fontconfig_config=""
+		return 0
+	fi
+	if [ "$with_fontconfig" != "2" ] && [ -z "$freetype_config" ]; then
+		log 1 "checking libfontconfig... no freetype, skipping"
+
+		fontconfig_config=""
+		return 0
+	fi
+
+	if [ "$os" = "MINGW" ] || [ "$os" = "CYGWIN" ] || [ "$os" = "WINCE" ]; then
+		log 1 "checking libfontconfig... WIN32, skipping"
+		fontconfig_config=""
+		return 0
+	fi
+
+	if [ "$with_fontconfig" = "1" ] || [ "$with_fontconfig" = "" ] || [ "$with_fontconfig" = "2" ]; then
+		fontconfig_config="pkg-config fontconfig"
+	else
+		fontconfig_config="$with_fontconfig"
+	fi
+
+	version=`$fontconfig_config --modversion 2>/dev/null`
+	ret=$?
+	shortversion=`echo $version | cut -c 1,3`
+	log 2 "executing $fontconfig_config --modversion"
+	log 2 "  returned $version"
+	log 2 "  exit code $ret"
+
+	if [ -z "$version" ] || [ "$ret" != "0" ] || [ "$shortversion" -le "22" ]; then
+		if [ -n "$shortversion" ] && [ "$shortversion" -le "22" ]; then
+			log 1 "checking libfontconfig... needs at least version 2.3.0, fontconfig NOT enabled"
+		else
+			log 1 "checking libfontconfig... not found"
+		fi
+
+		# It was forced, so it should be found.
+		if [ "$with_fontconfig" != "1" ]; then
+			log 1 "configure: error: fontconfig-config couldn't be found"
+			log 1 "configure: error: you supplied '$with_fontconfig', but it seems invalid"
+			exit 1
+		fi
+
+		fontconfig_config=""
+		return 0
+	fi
+
+	log 1 "checking libfontconfig... found"
+}
+
+detect_icu() {
+	# 0 means no, 1 is auto-detect, 2 is force
+	if [ "$with_icu" = "0" ]; then
+		log 1 "checking libicu... disabled"
+
+		icu_config=""
+		return 0
+	fi
+	if [ "$with_icu" = "1" ] && [ "$enable_dedicated" != "0" ]; then
+		log 1 "checking libicu... dedicated server, skipping"
+
+		icu_config=""
+		return 0
+	fi
+
+	if [ "$with_icu" = "1" ] || [ "$with_icu" = "" ] || [ "$with_icu" = "2" ]; then
+		icu_config="icu-config"
+	else
+		icu_config="$with_icu"
+	fi
+
+	version=`$icu_config --version 2>/dev/null`
+	ret=$?
+	shortversion=`echo $version | cut -c 1,3`
+	log 2 "executing $icu_config --version"
+	log 2 "  returned $version"
+	log 2 "  exit code $ret"
+
+	if [ -z "$version" ] || [ "$ret" != "0" ] || [ "$shortversion" -lt "20" ]; then
+		if [ -n "$shortversion" ] && [ "$shortversion" -lt "20" ]; then
+			log 1 "checking libicu... needs at least version 2.0.0, icu NOT enabled"
+		else
+			log 1 "checking libicu... not found"
+		fi
+
+		# It was forced, so it should be found.
+		if [ "$with_icu" != "1" ]; then
+			log 1 "configure: error: icu-config couldn't be found"
+			log 1 "configure: error: you supplied '$with_icuconfig', but it seems invalid"
+			exit 1
+		fi
+
+		icu_config=""
+		return 0
+	fi
+
+	log 1 "checking libicu... found"
+}
+
+detect_pspconfig() {
+	# 0 means no, 1 is auto-detect, 2 is force
+	if [ "$with_psp_config" = "0" ]; then
+		log 1 "checking psp-config... disabled"
+
+		psp_config=""
+		return 0
+	fi
+
+	if [ "$with_psp_config" = "1" ] && [ "$os" != "PSP" ]; then
+		log 1 "checking psp-config... not PSP, skipping"
+
+		psp_config="";
+		return 0
+	fi
+
+	if [ "$os" != "PSP" ]; then
+		log 1 "checking psp-config... not PSP"
+
+		log 1 "configure: error: psp-config is only supported for PSP"
+		exit 1
+	fi
+
+	if [ "$with_psp_config" = "1" ] || [ "$with_psp_config" = "" ] || [ "$with_psp_config" = "2" ]; then
+		psp_config="psp-config"
+	else
+		psp_config="$with_psp_config"
+	fi
+
+	version=`$psp_config -p 2>/dev/null`
+	ret=$?
+	log 2 "executing $psp_config -p"
+	log 2 "  returned $version"
+	log 2 "  exit code $ret"
+
+	if [ -z "$version" ] || [ "$ret" != "0" ]; then
+		log 1 "checking psp-config... not found"
+		log 1 "configure: error: psp-config couldn't be found"
+
+		# It was forced, so it should be found.
+		if [ "$with_psp_config" != "1" ]; then
+			log 1 "configure: error: you supplied '$with_psp_config', but it seems invalid"
+		fi
+		exit 1
+	fi
+
+	log 1 "checking psp-config... found"
+}
+
+detect_iconv() {
+	# 0 means no, 1 is auto-detect, 2 is force
+	if [ "$with_iconv" = "0" ]; then
+		log 1 "checking iconv... disabled"
+
+		return 0
+	fi
+
+	if [ "$with_iconv" = "1" ] && [ "$os" != "OSX" ]; then
+		log 1 "checking iconv... not OSX, skipping"
+		with_iconv="0"
+
+		return 0
+	fi
+
+	# Try to find iconv.h, seems to only thing to detect iconv with
+
+	if [ "$with_iconv" = "1" ] || [ "$with_iconv" = "" ] || [ "$with_iconv" = "2" ]; then
+		iconv=`ls -1 /usr/include 2>/dev/null | grep "iconv.h"`
+		if [ -z "$iconv" ]; then
+			iconv=`ls -1 /usr/local/include 2>/dev/null | grep "iconv.h"`
+		fi
+	else
+		# Make sure it exists
+		iconv=`ls $with_iconv/include/iconv.h 2>/dev/null`
+	fi
+
+	if [ -z "$iconv" ]; then
+		log 1 "checking iconv... not found"
+		if [ "$with_iconv" = "2" ]; then
+			log 1 "configure: error: iconv couldn't be found"
+
+			exit 1
+		elif [ "$with_iconv" != "1" ]; then
+			log 1 "configure: error: iconv couldn't be found"
+			log 1 "configure: error: you supplied '$with_iconv', but I couldn't detect iconv in it"
+
+			exit 1
+		fi
+
+		return 0
+	fi
+
+	if [ "$with_iconv" = "1" ]; then
+		with_iconv="2"
+	fi
+
+	log 2 "found iconv in $iconv"
+
+	log 1 "checking iconv... found"
+
+	# Check if we need to work around buggy iconv implementation where inbuf
+	# is wrongly typed as non-const. Correct implementation is at
+	# http://www.opengroup.org/onlinepubs/007908799/xsh/iconv.html
+
+	cat > tmp.iconv.cpp << EOF
+#include "src/stdafx.h"
+#include <iconv.h>
+int main() {
+	static char buf[1024];
+	iconv_t convd = 0;
+	const char *inbuf = "";
+	char *outbuf  = buf;
+	size_t outlen = 1023;
+	size_t inlen  = 0;
+	return iconv(convd, &inbuf, &inlen, &outbuf, &outlen);
+}
+EOF
+	execute="$cxx_host $CFLAGS -c tmp.iconv.cpp -o tmp.iconv -DTESTING 2>&1"
+	eval $execute >&/dev/null
+	ret=$?
+	log 2 "executing $execute"
+	log 2 "  exit code $ret"
+	if [ "$ret" = "0" ]; then have_broken_iconv="no"; else have_broken_iconv="yes"; fi
+	log 1 "checking if iconv has non-const inbuf... $have_broken_iconv"
+
+	cat > tmp.iconv.cpp << EOF
+#include "src/stdafx.h"
+#include <iconv.h>
+int main() {
+	static char buf[1024];
+	iconv_t convd = 0;
+	char *inbuf = "";
+	char *outbuf  = buf;
+	size_t outlen = 1023;
+	size_t inlen  = 0;
+	return iconv(convd, &inbuf, &inlen, &outbuf, &outlen);
+}
+EOF
+	execute="$cxx_host $CFLAGS tmp.iconv.cpp -o tmp.iconv -DTESTING 2>&1"
+	eval $execute >&/dev/null
+	ret=$?
+	log 2 "executing $execute"
+	log 2 "  exit code $ret"
+	if [ "$ret" = "0" ]; then link_to_iconv="no"; else link_to_iconv="yes"; fi
+	log 1 "checking whether to link to iconv... $link_to_iconv"
+	rm -f tmp.iconv tmp.iconv.cpp
+}
+
+_detect_sort() {
+	sort_test_in="d
+a
+c
+b"
+
+	sort_test_out="a
+b
+c
+d"
+
+	log 2 "running echo <array> | $1"
+
+	if [ "`echo \"$sort_test_in\" | $1 2>/dev/null`" = "$sort_test_out" ]; then
+		sort="$1"
+		log 2 "  result was valid"
+	else
+		log 2 "  result was invalid"
+	fi
+}
+
+detect_sort() {
+	if [ "$with_sort" = "0" ]; then
+		log 1 "checking sort... disabled"
+
+		return
+	fi
+
+	if [ "$with_sort" = "1" ] || [ "$with_sort" = "2" ]; then
+		_detect_sort "sort"
+		if [ -z "$sort" ]; then _detect_sort "/sbin/sort"; fi
+		if [ -z "$sort" ]; then _detect_sort "/usr/sbin/sort"; fi
+		if [ -z "$sort" ]; then _detect_sort "/usr/local/sbin/sort"; fi
+		if [ -z "$sort" ]; then _detect_sort "/bin/sort"; fi
+		if [ -z "$sort" ]; then _detect_sort "/usr/bin/sort"; fi
+		if [ -z "$sort" ]; then _detect_sort "/usr/local/bin/sort"; fi
+	else
+		_detect_sort "$with_sort"
+	fi
+
+	if [ -z "$sort" ]; then
+		if [ "$with_sort" = "2" ]; then
+			log 1 "checking sort... not found"
+
+			log 1 "configure: error: couldn't detect sort on your system"
+			exit 1
+		elif [ "$with_sort" != "1" ]; then
+			log 1 "checking sort... $with_sort not found"
+
+			log 1 "configure: error: '$with_sort' doesn't look like a sort to me"
+			log 1 "configure: error: please verify its location and function and try again"
+
+			exit 1
+		else
+			log 1 "checking sort... not found"
+		fi
+	else
+		log 1 "checking sort... $sort"
+	fi
+}
+
+detect_cputype() {
+	if [ -n "$cpu_type" ] && [ "$cpu_type" != "DETECT" ]; then
+		log 1 "forcing cpu-type... $cpu_type bits"
+		return;
+	fi
+	echo "#include \"src/stdafx.h\"" > tmp.64bit.cpp
+	echo "assert_compile(sizeof(size_t) == 8);" >> tmp.64bit.cpp
+	echo "int main() { return 0; }" >> tmp.64bit.cpp
+	execute="$cxx_host $CFLAGS tmp.64bit.cpp -o tmp.64bit -DTESTING 2>&1"
+	cpu_type="`eval $execute 2>/dev/null`"
+	ret=$?
+	log 2 "executing $execute"
+	log 2 "  returned $cpu_type"
+	log 2 "  exit code $ret"
+	if [ "$ret" = "0" ]; then cpu_type="64"; else cpu_type="32"; fi
+	log 1 "detecting cpu-type... $cpu_type bits"
+	rm -f tmp.64bit tmp.64bit.cpp
+}
+
+make_sed() {
+	T_CFLAGS="$CFLAGS"
+	T_LDFLAGS="$LDFLAGS"
+
+	# We check here if we are PPC, because then we need to enable FOUR_BYTE_BOOL
+	#  We do this here, and not sooner, so universal builds also have this
+	#  automatically correct
+	# FOUR_BYTE_BOOL is needed, because C++ uses 4byte for a bool on PPC, where
+	#  we use 1 byte per bool normally in C part. So convert that last one to 4
+	#  bytes too, but only for PPC.
+	ppc=`$cc_host -dumpmachine | egrep "powerpc|ppc"`
+	if [ -n "$ppc" ]; then
+		T_CFLAGS="$T_CFLAGS -DFOUR_BYTE_BOOL"
+	fi
+
+	SRC_OBJS_DIR="$BASE_SRC_OBJS_DIR/$OBJS_SUBDIR"
+
+	# All the data needed to compile a single target
+	#  Make sure if you compile multiple targets to
+	#  use multiple OBJS_DIR, because all in-between
+	#  binaries are stored in there, and nowhere else.
+	SRC_REPLACE="
+		s~!!CC_HOST!!~$cc_host~g;
+		s~!!CXX_HOST!!~$cxx_host~g;
+		s~!!CC_BUILD!!~$cc_build~g;
+		s~!!CXX_BUILD!!~$cxx_build~g;
+		s~!!WINDRES!!~$windres~g;
+		s~!!STRIP!!~$strip $strip_arg~g;
+		s~!!LIPO!!~$lipo~g;
+		s~!!CC_CFLAGS!!~$CC_CFLAGS~g;
+		s~!!CFLAGS!!~$T_CFLAGS~g;
+		s~!!CFLAGS_BUILD!!~$CFLAGS_BUILD~g;
+		s~!!STRGEN_FLAGS!!~$strgen_flags~g;
+		s~!!LIBS!!~$LIBS~g;
+		s~!!LDFLAGS!!~$T_LDFLAGS~g;
+		s~!!BIN_DIR!!~$BIN_DIR~g;
+		s~!!ROOT_DIR!!~$ROOT_DIR~g;
+		s~!!MEDIA_DIR!!~$MEDIA_DIR~g;
+		s~!!SOURCE_LIST!!~$SOURCE_LIST~g;
+		s~!!SRC_OBJS_DIR!!~$SRC_OBJS_DIR~g;
+		s~!!LANG_OBJS_DIR!!~$LANG_OBJS_DIR~g;
+		s~!!SRC_DIR!!~$SRC_DIR~g;
+		s~!!SCRIPT_SRC_DIR!!~$SCRIPT_SRC_DIR~g;
+		s~!!OSXAPP!!~$OSXAPP~g;
+		s~!!LANG_DIR!!~$LANG_DIR~g;
+		s~!!TTD!!~$TTD~g;
+		s~!!BINARY_DIR!!~$prefix_dir/$binary_dir~g;
+		s~!!DATA_DIR!!~$prefix_dir/$data_dir~g;
+		s~!!DOC_DIR!!~$prefix_dir/$doc_dir~g;
+		s~!!MAN_DIR!!~$prefix_dir/$man_dir~g;
+		s~!!ICON_DIR!!~$prefix_dir/$icon_dir~g;
+		s~!!ICON_THEME_DIR!!~$prefix_dir/$icon_theme_dir~g;
+		s~!!PERSONAL_DIR!!~$personal_dir~g;
+		s~!!SHARED_DIR!!~$shared_dir~g;
+		s~!!INSTALL_DIR!!~$install_dir~g;
+		s~!!BINARY_NAME!!~$binary_name~g;
+		s~!!STRGEN!!~$STRGEN~g;
+		s~!!ENDIAN_CHECK!!~$ENDIAN_CHECK~g;
+		s~!!ENDIAN_FORCE!!~$endian~g;
+		s~!!STAGE!!~$STAGE~g;
+		s~!!MAKEDEPEND!!~$makedepend~g;
+		s~!!CFLAGS_MAKEDEP!!~$cflags_makedep~g;
+		s~!!SORT!!~$sort~g;
+		s~!!CONFIG_CACHE_COMPILER!!~config.cache.compiler~g;
+		s~!!CONFIG_CACHE_LINKER!!~config.cache.linker~g;
+		s~!!CONFIG_CACHE_ENDIAN!!~config.cache.endian~g;
+		s~!!CONFIG_CACHE_SOURCE!!~config.cache.source~g;
+		s~!!CONFIG_CACHE_VERSION!!~config.cache.version~g;
+		s~!!CONFIG_CACHE_SOURCE_LIST!!~config.cache.source.list~g;
+		s~!!CONFIG_CACHE_PWD!!~config.cache.pwd~g;
+		s~!!LANG_SUPPRESS!!~$lang_suppress~g;
+		s~!!OBJS_C!!~$OBJS_C~g;
+		s~!!OBJS_CPP!!~$OBJS_CPP~g;
+		s~!!OBJS_MM!!~$OBJS_MM~g;
+		s~!!OBJS_RC!!~$OBJS_RC~g;
+		s~!!SRCS!!~$SRCS~g;
+		s~!!OS!!~$os~g;
+		s~!!CONFIGURE_FILES!!~$CONFIGURE_FILES~g;
+		s~!!REVISION!!~$revision~g;
+		s~!!AWK!!~$awk~g;
+		s~!!GCC295!!~$gcc295~g;
+		s~!!DISTCC!!~$distcc~g;
+	"
+
+	if [ "$icon_theme_dir" != "" ]; then
+		SRC_REPLACE="$SRC_REPLACE
+			s#!!ICON_THEME_DIR!!#$prefix_dir/$icon_theme_dir#g;
+		"
+	else
+		SRC_REPLACE="$SRC_REPLACE
+			s#!!ICON_THEME_DIR!!##g;
+		"
+	fi
+
+	if [ "$man_dir" != "" ]; then
+		SRC_REPLACE="$SRC_REPLACE
+			s#!!MAN_DIR!!#$prefix_dir/$man_dir#g;
+		"
+	else
+		SRC_REPLACE="$SRC_REPLACE
+			s#!!MAN_DIR!!##g;
+		"
+	fi
+
+	if [ "$menu_dir" != "" ]; then
+		SRC_REPLACE="$SRC_REPLACE
+			s#!!MENU_DIR!!#$prefix_dir/$menu_dir#g;
+		"
+	else
+		SRC_REPLACE="$SRC_REPLACE
+			s#!!MENU_DIR!!##g;
+		"
+	fi
+}
+
+generate_menu_item() {
+	MENU_REPLACE="
+		s~!!TTD!!~$TTD~g;
+		s~!!MENU_GROUP!!~$menu_group~g;
+		s~!!MENU_NAME!!~$menu_name~g
+	"
+	log 1 "Generating menu item..."
+	mkdir -p media
+	< $ROOT_DIR/media/openttd.desktop.in sed "$MENU_REPLACE" > media/openttd.desktop
+}
+
+generate_main() {
+	STAGE="[MAIN]"
+
+	make_sed
+
+	# Create the main Makefile
+	log 1 "Generating Makefile..."
+	echo "# Auto-generated file from 'Makefile.in' -- DO NOT EDIT" > Makefile
+	< $ROOT_DIR/Makefile.in sed "$SRC_REPLACE" >> Makefile
+	cp $ROOT_DIR/Makefile.bundle.in Makefile.bundle
+	echo "# Auto-generated file -- DO NOT EDIT" > Makefile.am
+	echo >> Makefile.am
+	# Make the copy of the source-list, so we don't trigger an unwanted recompile
+	cp $SOURCE_LIST config.cache.source.list
+	# Add the current directory, so we don't trigger an unwanted recompile
+	echo "`pwd`" > config.cache.pwd
+	# Make sure config.cache is OLDER then config.cache.source.list
+	touch config.cache
+	touch config.pwd
+
+	if [ "$menu_dir" != "" ]; then
+		generate_menu_item
+	fi
+}
+
+generate_lang() {
+	STAGE="[LANG]"
+
+	make_sed
+
+	# Create the language file
+	mkdir -p $LANG_OBJS_DIR
+
+	log 1 "Generating lang/Makefile..."
+	echo "# Auto-generated file from 'Makefile.lang.in' -- DO NOT EDIT" > $LANG_OBJS_DIR/Makefile
+	< $ROOT_DIR/Makefile.lang.in sed "$SRC_REPLACE" >> $LANG_OBJS_DIR/Makefile
+	echo "DIRS += $LANG_OBJS_DIR" >> Makefile.am
+	echo "LANG_DIRS += $LANG_OBJS_DIR" >> Makefile.am
+}
+
+generate_src_normal() {
+	STAGE=$1
+
+	make_sed
+
+	# Create the source file
+	mkdir -p $SRC_OBJS_DIR
+
+	log 1 "Generating $2/Makefile..."
+	echo "# Auto-generated file from 'Makefile.src.in' -- DO NOT EDIT" > $SRC_OBJS_DIR/Makefile
+	< $ROOT_DIR/Makefile.src.in sed "$SRC_REPLACE" >> $SRC_OBJS_DIR/Makefile
+	echo "DIRS += $SRC_OBJS_DIR" >> Makefile.am
+	echo "SRC_DIRS += $SRC_OBJS_DIR" >> Makefile.am
+}
+
+generate_src_osx() {
+	cc_host_orig="$cc_host"
+	cxx_host_orig="$cxx_host"
+
+	BASE_SRC_OBJS_DIR="$OBJS_DIR/ppc"
+	cc_host="$cc_host_orig -arch ppc"
+	cxx_host="$cxx_host_orig -arch ppc"
+	generate_src_normal "[PowerPC]" "objs/ppc"
+
+	BASE_SRC_OBJS_DIR="$OBJS_DIR/intel"
+	cc_host="$cc_host_orig -arch i386"
+	cxx_host="$cxx_host_orig -arch i386"
+	generate_src_normal "[Intel]" "objs/intel"
+
+	BASE_SRC_OBJS_DIR="$OBJS_DIR/ppc970"
+	cc_host="$cc_host_orig -arch ppc970"
+	cxx_host="$cxx_host_orig -arch ppc970"
+	CFLAGS="$CFLAGS -mtune=970 -mcpu=970 -mpowerpc-gpopt"
+	generate_src_normal "[PowerPC G5]" "objs/ppc970"
+}
+
+generate_src() {
+	if [ "$os" = "OSX" ] && [ "$enable_universal" != "0" ]; then
+		generate_src_osx
+	else
+		generate_src_normal "[SRC]" "objs"
+	fi
+}
+
+showhelp() {
+	echo "'configure' configures OpenTTD."
+	echo ""
+	echo "Usage: $0 [OPTION]... [VAR=VALUE]..."
+	echo ""
+	echo "To assign environment variables (e.g., CC, CFLAGS...), specify them as"
+	echo "VAR=VALUE.  See below for descriptions of some of the useful variables."
+	echo ""
+	echo "Defaults for the options are specified in brackets."
+	echo ""
+	echo "Configuration:"
+	echo "  -h, --help                     display this help and exit"
+	echo ""
+	echo "System types:"
+	echo "  --build=BUILD                  configure for building on BUILD [guessed]"
+	echo "  --host=HOST                    cross-compile to build programs to run"
+	echo "                                 on HOST [BUILD]"
+	echo "  --windres=WINDRES              the windres to use [HOST-windres]"
+	echo "  --strip=STRIP                  the strip to use [HOST-strip]"
+	echo "  --awk=AWK                      the awk to use in configure [awk]"
+	echo "  --lipo=LIPO                    the lipo to use (OSX ONLY) [HOST-lipo]"
+	echo "  --os=OS                        the OS we are compiling for [DETECT]"
+	echo "                                 DETECT/UNIX/OSX/FREEBSD/OPENBSD/NETBSD/"
+	echo "                                 MORPHOS/HPUX/BEOS/SUNOS/CYGWIN/MINGW/OS2/"
+	echo "                                 DOS/WINCE/PSP"
+	echo "  --endian=ENDIAN                set the endian of the HOST (AUTO/LE/BE)"
+	echo "  --revision=rXXXX               overwrite the revision detection."
+	echo "                                 Use with care!"
+	echo ""
+	echo "Paths:"
+	echo "  --prefix-dir=dir               specifies the prefix for all installed"
+	echo "                                 files [/usr/local]"
+	echo "  --binary-dir=dir               location of the binary. Will be prefixed"
+	echo "                                 with the prefix-dir [games]"
+	echo "  --data-dir=dir                 location of data files (lang, data, gm)."
+	echo "                                 Will be prefixed with the prefix-dir"
+	echo "                                 [share/games/openttd]"
+	echo "  --doc-dir=dir                  location of the doc files"
+	echo "                                 Will be prefixed with the prefix-dir"
+	echo "                                 [$doc_dir]"
+	echo "  --icon-dir=dir                 location of icons. Will be prefixed"
+	echo "                                 with the prefix-dir [share/pixmaps]"
+	echo "  --icon-theme-dir=dir           location of icon theme."
+	echo "                                 Will be prefixed with the prefix-dir"
+	echo "                                 and postfixed with size-dirs [$icon_theme_dir]"
+	echo "  --man-dir=dir                  location of the manual page (UNIX only)"
+	echo "                                 Will be prefixed with the prefix-dir"
+	echo "                                 [$man_dir]"
+	echo "  --menu-dir=dir                 location of the menu item. (UNIX only, except OSX)"
+	echo "                                 Will be prefixed with the prefix-dir"
+	echo "                                 [share/applications]"
+	echo "  --personal-dir=dir             location of the personal directory"
+	echo "                                 [os-dependent default]"
+	echo "  --shared-dir=dir               location of shared data files"
+	echo "                                 [os-dependent default]"
+	echo "  --install-dir=dir              specifies the root to install to."
+	echo "                                 Useful to install into jails [/]"
+	echo "  --binary-name                  the name used for the binary, icons,"
+	echo "                                 desktop file, etc. when installing [openttd]"
+	echo ""
+	echo "Features and packages:"
+	echo "  --enable-debug[=LVL]           enable debug-mode (LVL=[0123], 0 is release)"
+	echo "  --enable-desync-debug=[LVL]    enable desync debug options (LVL=[012], 0 is none"
+	echo "  --enable-profiling             enables profiling"
+	echo "  --enable-dedicated             compile a dedicated server (without video)"
+	echo "  --enable-static                enable static compile (doesn't work for"
+	echo "                                 all HOSTs)"
+	echo "  --enable-translator            enable extra output for translators"
+	echo "  --enable-universal             enable universal builds (OSX ONLY)"
+	echo "  --enable-osx-g5                enables optimizations for G5 (OSX ONLY)"
+	echo "  --disable-cocoa-quartz         disable the quartz window mode driver for Cocoa (OSX ONLY)"
+	echo "  --disable-cocoa-quickdraw      disable the quickdraw window mode driver for Cocoa (OSX ONLY)"
+	echo "  --disable-unicode              disable unicode support to build win9x"
+	echo "                                 version (Win32 ONLY)"
+	echo "  --disable-network              disable network support"
+	echo "  --disable-assert               disable asserts (continue on errors)"
+	echo "  --enable-strip                 enable any possible stripping"
+	echo "  --without-osx-sysroot          disable the automatic adding of sysroot "
+	echo "                                 (OSX ONLY)"
+	echo "  --without-application-bundle   disable generation of application bundle"
+	echo "                                 (OSX ONLY)"
+	echo "  --without-menu-entry           Don't generate a menu item (Freedesktop based only)"
+	echo "  --menu-group=group             Category in which the menu item will be placed (Freedesktop based only)"
+	echo "  --menu-name=name               Name of the menu item when placed [OpenTTD]"
+	echo "  --with-direct-music            enable direct music support (Win32 ONLY)"
+	echo "  --with-sort=sort               define a non-default location for sort"
+	echo "  --with-midi=midi               define which midi-player to use"
+	echo "  --with-midi-arg=arg            define which args to use for the"
+	echo "                                 midi-player"
+	echo "  --with-allegrol[=allegro-config]"
+	echo "                                 enables Allegro video driver support"
+	echo "  --with-cocoa                   enables COCOA video driver (OSX ONLY)"
+	echo "  --with-sdl[=sdl-config]        enables SDL video driver support"
+	echo "  --with-zlib[=zlib.a]           enables zlib support"
+	echo "  --with-png[=libpng-config]     enables libpng support"
+	echo "  --with-freetype[=freetype-config]"
+	echo "                                 enables libfreetype support"
+	echo "  --with-fontconfig[=pkg-config fontconfig]"
+	echo "                                 enables fontconfig support"
+	echo "  --with-icu[=icu-config]        enables icu (used for right-to-left support)"
+	echo "  --with-iconv[=iconv-path]      enables iconv support"
+	echo "  --with-psp-config[=psp-config] enables psp-config support (PSP ONLY)"
+	echo "  --with-makedepend[=makedepend] enables makedepend support"
+	echo ""
+	echo "Some influential environment variables:"
+	echo "  CC                             C compiler command"
+	echo "  CXX                            C++ compiler command"
+	echo "  CFLAGS                         C compiler flags"
+	echo "  WINDRES                        windres command"
+	echo "  LDFLAGS                        linker flags, e.g. -L<lib dir> if you"
+	echo "                                 have libraries in a nonstandard"
+	echo "                                 directory <lib dir>"
+	echo ""
+	echo "Use these variables to override the choices made by 'configure' or to help"
+	echo "it to find libraries and programs with nonstandard names/locations."
+}
