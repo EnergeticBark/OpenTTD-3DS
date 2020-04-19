@@ -1,0 +1,29 @@
+README
+------------------------------------------------------------------------
+All bugs listed below are marked as known. Please do not submit any bugs
+that are the same as these. If you do, do not act surprised, because
+we WILL flame you!!
+
+Of course if you have more knowledge about any of these bugs, have more
+specifics, we welcome you to report them. React to the given bug indicated
+by the number below on http://bugs.openttd.org.
+
+If the bug report is closed, it has been fixed, which then can be verified
+in the latest SVN version of /trunk.
+
+Bugs for 0.7.0
+------------------------------------------------------------------------
+URL: http://bugs.openttd.org
+
+- 2769	No offer for buying bankrupt AIs
+- 2737	Self-crossing trains ignore "forbid 90 degree turn" setting
+- 2616	Cloning creates vehicles with invalid subcargos
+- 2585	[OSX] OS' mouse pointer showing
+- 2427	Vehicle owner gets paid for whole cargo feeder share
+- 1944	Road vehicles not picking empty drivethrough platform
+- 1762	Strange Autoreplace behaviour
+- 1495	Long vehicles might block multistop drivethrough stations
+- 1473	Lost trains ignore exit signals
+- 1140	[OSX] Not smooth moving map with touchpad
+- 1072	Text overflows in several windows
+-  119	Clipping problems with vehicles on slopes

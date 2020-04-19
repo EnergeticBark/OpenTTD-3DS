@@ -1,0 +1,93 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" Please adjust this date whenever revising the manpage.
+.Dd Feb 05, 2009
+.Dt OPENTTD 6
+.Sh NAME
+.Nm openttd
+.Nd An open source clone of the Microprose game "Transport Tycoon Deluxe"
+.Sh SYNOPSIS
+.Nm
+.Op Fl efhx
+.Op Fl a Ar ai
+.Op Fl b Ar blitter
+.Op Fl c Ar config_file
+.Op Fl d Ar [level | cat=lvl[, ...]]
+.Op Fl D Ar [host][:port]
+.Op Fl g Ar [savegame]
+.Op Fl G Ar seed
+.Op Fl i Ar palette
+.Op Fl I Ar graphicsset
+.Op Fl l Ar host[:port]
+.Op Fl m Ar driver
+.Op Fl n Ar host[:port][#player]
+.Op Fl r Ar widthxheight
+.Op Fl s Ar driver
+.Op Fl t Ar year
+.Op Fl v Ar driver
+.Sh OPTIONS
+.Bl -tag -width ".Fl n Ar host[:port][#player]"
+.It Fl a Ar ai
+Set the AI, see
+.Fl h
+.It Fl b Ar blitter
+Set the blitter, see
+.Fl h
+.It Fl c Ar config_file
+Use 'config_file' instead of 'openttd.cfg'
+.It Fl d Ar [level]
+Set debug verbosity for all categories to
+.Ar level
+or 1 if omitted
+.It Fl d Ar cat=level[, ...]
+Set debug verbosity for a specific category
+.It Fl D Ar [host][:port]
+Start a dedicated server. Sets network debug level to 6. If you want to change this, use
+.Fl d
+after
+.Fl D
+.It Fl G Ar seed
+Seed the pseudo random number generator
+.It Fl e
+Start in world editor mode
+.It Fl f
+Fork into background (dedicated only, see
+.Fl D )
+.It Fl g Ar [savegame]
+Load
+.Ar savegame
+at start or start a new game if omitted
+.It Fl h
+Display a summary of all options and available AIs, blitters, drivers and graphic sets
+.It Fl i Ar palette
+Set the palette, see
+.Fl h
+.It Fl I Ar graphicsset
+Set the graphics set, see
+.Fl h
+.It Fl l Ar host[:port]
+Redirect DEBUG(), See
+.Fl D
+.It Fl m Ar driver
+Set the music driver, see
+.Fl h
+.It Fl n Ar host[:port][#player]
+Join a network game, optionally specify player to play as and port to connect to
+.It Fl r Ar widthxheight
+Set the resolution
+.It Fl s Ar driver
+Set the sound driver, see
+.Fl h
+.It Fl t Ar year
+Set the starting year
+.It Fl v Ar driver
+Set the video driver, see
+.Fl h
+.It Fl x
+Do not automatically save to config file on exit
+.El
+.Sh SEE ALSO
+http://wiki.openttd.org/, http://www.openttd.org
+.Sh HISTORY
+Transport Tycoon Deluxe was written by Chris Sawyer and published by Microprose.
+.Nm
+is a free reimplementation.

@@ -1,0 +1,905 @@
+# Source Files
+airport.cpp
+animated_tile.cpp
+articulated_vehicles.cpp
+autoreplace.cpp
+aystar.cpp
+bmp.cpp
+callback_table.cpp
+cargopacket.cpp
+cargotype.cpp
+cheat.cpp
+command.cpp
+console.cpp
+console_cmds.cpp
+currency.cpp
+date.cpp
+debug.cpp
+dedicated.cpp
+depot.cpp
+driver.cpp
+economy.cpp
+effectvehicle.cpp
+elrail.cpp
+engine.cpp
+fileio.cpp
+fios.cpp
+fontcache.cpp
+gamelog.cpp
+genworld.cpp
+gfx.cpp
+gfxinit.cpp
+heightmap.cpp
+highscore.cpp
+ini.cpp
+landscape.cpp
+map.cpp
+md5.cpp
+minilzo.cpp
+misc.cpp
+mixer.cpp
+music.cpp
+namegen.cpp
+network/network.cpp
+network/network_client.cpp
+network/network_command.cpp
+network/network_content.cpp
+network/network_gamelist.cpp
+network/network_server.cpp
+network/network_udp.cpp
+npf.cpp
+oldpool.cpp
+openttd.cpp
+os_timer.cpp
+#if WIN32
+	ottdres.rc
+#end
+#if WINCE
+	ottdres.rc
+#end
+pathfind.cpp
+pbs.cpp
+queue.cpp
+rail.cpp
+rev.cpp
+road.cpp
+screenshot.cpp
+#if SDL
+	sdl.cpp
+#end
+settings.cpp
+signal.cpp
+signs.cpp
+sound.cpp
+spritecache.cpp
+station.cpp
+string.cpp
+strings.cpp
+texteff.cpp
+tgp.cpp
+#if HAVE_THREAD
+	#if WIN32
+		thread_win32.cpp
+	#else
+		#if OS2
+			thread_os2.cpp
+		#else
+			#if MORPHOS
+				thread_morphos.cpp
+			#else
+				thread_pthread.cpp
+			#end
+		#end
+	#end
+#else
+	thread_none.cpp
+#end
+tile_map.cpp
+#if WIN32
+#else
+	#if WINCE
+		win32.cpp
+	#else
+		#if OS2
+			os2.cpp
+		#else
+			unix.cpp
+		#end
+	#end
+#end
+vehicle.cpp
+vehiclelist.cpp
+viewport.cpp
+waypoint.cpp
+widget.cpp
+#if WIN32
+	win32.cpp
+#end
+window.cpp
+
+# Header Files
+#if ALLEGRO
+	music/allegro_m.h
+	sound/allegro_s.h
+	video/allegro_v.h
+#end
+aircraft.h
+airport.h
+airport_movement.h
+animated_tile_func.h
+articulated_vehicles.h
+autoreplace_base.h
+autoreplace_func.h
+autoreplace_gui.h
+autoreplace_type.h
+autoslope.h
+aystar.h
+bmp.h
+bridge.h
+callback_table.h
+cargo_type.h
+cargopacket.h
+cargotype.h
+cheat_func.h
+cheat_type.h
+cmd_helper.h
+command_func.h
+command_type.h
+company_base.h
+company_func.h
+company_gui.h
+company_manager_face.h
+company_type.h
+console_func.h
+console_gui.h
+console_internal.h
+console_type.h
+currency.h
+date_func.h
+date_type.h
+debug.h
+video/dedicated_v.h
+depot_base.h
+depot_func.h
+depot_map.h
+depot_type.h
+direction_func.h
+direction_type.h
+music/dmusic.h
+driver.h
+economy_func.h
+economy_type.h
+effectvehicle_base.h
+effectvehicle_func.h
+elrail_func.h
+engine_base.h
+engine_func.h
+engine_gui.h
+engine_type.h
+fileio_func.h
+fileio_type.h
+fios.h
+fontcache.h
+functions.h
+gamelog.h
+gamelog_internal.h
+genworld.h
+gfx_func.h
+gfx_type.h
+gfxinit.h
+group.h
+group_gui.h
+group_type.h
+gui.h
+heightmap.h
+highscore.h
+industry.h
+industry_type.h
+ini_type.h
+landscape.h
+landscape_type.h
+livery.h
+lzoconf.h
+map_func.h
+map_type.h
+md5.h
+minilzo.h
+mixer.h
+music.h
+namegen_func.h
+network/network.h
+network/network_base.h
+network/network_client.h
+network/network_content.h
+network/network_func.h
+network/network_gamelist.h
+network/network_gui.h
+network/network_internal.h
+network/network_server.h
+network/network_type.h
+network/network_udp.h
+newgrf.h
+newgrf_callbacks.h
+newgrf_canal.h
+newgrf_cargo.h
+newgrf_commons.h
+newgrf_config.h
+newgrf_engine.h
+newgrf_generic.h
+newgrf_house.h
+newgrf_industries.h
+newgrf_industrytiles.h
+newgrf_sound.h
+newgrf_spritegroup.h
+newgrf_station.h
+newgrf_storage.h
+newgrf_text.h
+newgrf_town.h
+newgrf_townname.h
+news_func.h
+news_gui.h
+news_type.h
+npf.h
+music/null_m.h
+sound/null_s.h
+video/null_v.h
+oldpool.h
+oldpool_func.h
+openttd.h
+order_base.h
+order_func.h
+order_type.h
+pathfind.h
+pbs.h
+querystring_gui.h
+queue.h
+rail.h
+rail_gui.h
+rail_type.h
+rev.h
+road_cmd.h
+road_func.h
+road_gui.h
+road_internal.h
+road_type.h
+roadveh.h
+screenshot.h
+sdl.h
+sound/sdl_s.h
+video/sdl_v.h
+settings_func.h
+settings_internal.h
+settings_type.h
+ship.h
+signal_func.h
+signal_type.h
+signs_base.h
+signs_func.h
+signs_type.h
+slope_func.h
+slope_type.h
+sortlist_type.h
+sound_func.h
+sound_type.h
+sprite.h
+spritecache.h
+station_base.h
+station_func.h
+station_gui.h
+station_type.h
+statusbar_gui.h
+stdafx.h
+strgen/strgen.h
+string_func.h
+string_type.h
+strings_func.h
+strings_type.h
+tar_type.h
+terraform_gui.h
+textbuf_gui.h
+texteff.hpp
+tgp.h
+thread.h
+tile_cmd.h
+tile_type.h
+tilehighlight_func.h
+tilehighlight_type.h
+timetable.h
+toolbar_gui.h
+town.h
+town_type.h
+track_func.h
+track_type.h
+train.h
+transparency.h
+transparency_gui.h
+transport_type.h
+tunnelbridge.h
+unmovable.h
+variables.h
+vehicle_base.h
+vehicle_func.h
+vehicle_gui.h
+vehicle_gui_base.h
+vehicle_type.h
+vehiclelist.h
+viewport_func.h
+viewport_type.h
+water.h
+waypoint.h
+waypoint_type.h
+widget_type.h
+win32.h
+music/win32_m.h
+sound/win32_s.h
+video/win32_v.h
+window_func.h
+window_gui.h
+window_type.h
+zoom_func.h
+zoom_type.h
+#if WIN32
+#else
+music/bemidi.h
+music/extmidi.h
+music/libtimidity.h
+music/os2_m.h
+music/qtmidi.h
+os/macosx/macos.h
+os/macosx/osx_stdafx.h
+os/macosx/splash.h
+sound/cocoa_s.h
+video/cocoa/cocoa_keys.h
+video/cocoa/cocoa_v.h
+#end
+
+# Core Source Code
+core/alloc_func.cpp
+core/alloc_func.hpp
+core/alloc_type.hpp
+core/bitmath_func.cpp
+core/bitmath_func.hpp
+core/endian_func.hpp
+core/endian_type.hpp
+core/enum_type.hpp
+core/geometry_type.hpp
+core/math_func.hpp
+core/mem_func.hpp
+core/overflowsafe_type.hpp
+core/random_func.cpp
+core/random_func.hpp
+core/smallmap_type.hpp
+core/smallvec_type.hpp
+core/sort_func.hpp
+core/string_compare_type.hpp
+
+# GUI Source Code
+aircraft_gui.cpp
+airport_gui.cpp
+autoreplace_gui.cpp
+bridge_gui.cpp
+build_vehicle_gui.cpp
+cheat_gui.cpp
+company_gui.cpp
+console_gui.cpp
+depot_gui.cpp
+dock_gui.cpp
+engine_gui.cpp
+genworld_gui.cpp
+graph_gui.cpp
+group_gui.cpp
+highscore_gui.cpp
+industry_gui.cpp
+intro_gui.cpp
+main_gui.cpp
+misc_gui.cpp
+music_gui.cpp
+network/network_chat_gui.cpp
+network/network_content_gui.cpp
+network/network_gui.cpp
+newgrf_gui.cpp
+news_gui.cpp
+order_gui.cpp
+osk_gui.cpp
+rail_gui.cpp
+road_gui.cpp
+roadveh_gui.cpp
+settings_gui.cpp
+ship_gui.cpp
+signs_gui.cpp
+smallmap_gui.cpp
+station_gui.cpp
+statusbar_gui.cpp
+subsidy_gui.cpp
+terraform_gui.cpp
+timetable_gui.cpp
+toolbar_gui.cpp
+town_gui.cpp
+train_gui.cpp
+transparency_gui.cpp
+tree_gui.cpp
+vehicle_gui.cpp
+waypoint_gui.cpp
+
+# Widgets
+widgets/dropdown.cpp
+widgets/dropdown_func.h
+widgets/dropdown_type.h
+
+# Command handlers
+aircraft_cmd.cpp
+autoreplace_cmd.cpp
+clear_cmd.cpp
+company_cmd.cpp
+disaster_cmd.cpp
+dummy_land.cpp
+group_cmd.cpp
+industry_cmd.cpp
+misc_cmd.cpp
+order_cmd.cpp
+rail_cmd.cpp
+road_cmd.cpp
+roadveh_cmd.cpp
+ship_cmd.cpp
+signs_cmd.cpp
+station_cmd.cpp
+terraform_cmd.cpp
+timetable_cmd.cpp
+town_cmd.cpp
+train_cmd.cpp
+tree_cmd.cpp
+tunnelbridge_cmd.cpp
+unmovable_cmd.cpp
+vehicle_cmd.cpp
+water_cmd.cpp
+waypoint_cmd.cpp
+
+# Save/Load handlers
+saveload/afterload.cpp
+saveload/ai_sl.cpp
+saveload/animated_tile_sl.cpp
+saveload/autoreplace_sl.cpp
+saveload/cargopacket_sl.cpp
+saveload/cheat_sl.cpp
+saveload/company_sl.cpp
+saveload/depot_sl.cpp
+saveload/economy_sl.cpp
+saveload/engine_sl.cpp
+saveload/gamelog_sl.cpp
+saveload/group_sl.cpp
+saveload/industry_sl.cpp
+saveload/map_sl.cpp
+saveload/misc_sl.cpp
+saveload/newgrf_sl.cpp
+saveload/oldloader.cpp
+saveload/oldloader.h
+saveload/oldloader_sl.cpp
+saveload/order_sl.cpp
+saveload/saveload.cpp
+saveload/saveload.h
+saveload/saveload_internal.h
+saveload/signs_sl.cpp
+saveload/station_sl.cpp
+saveload/strings_sl.cpp
+saveload/subsidy_sl.cpp
+saveload/town_sl.cpp
+saveload/vehicle_sl.cpp
+saveload/waypoint_sl.cpp
+
+# Tables
+table/animcursors.h
+table/autorail.h
+table/bridge_land.h
+table/build_industry.h
+table/cargo_const.h
+table/clear_land.h
+table/control_codes.h
+table/elrail_data.h
+table/engines.h
+table/files.h
+table/genland.h
+table/industry_land.h
+table/landscape_sprite.h
+table/namegen.h
+table/palette_convert.h
+table/palettes.h
+table/railtypes.h
+table/road_land.h
+table/roadveh_movement.h
+table/sprites.h
+table/station_land.h
+../objs/langs/table/strings.h
+table/town_land.h
+table/track_land.h
+table/train_cmd.h
+table/tree_land.h
+table/unicode.h
+table/unmovable_land.h
+table/water_land.h
+
+# Script
+script/squirrel.cpp
+script/squirrel.hpp
+script/squirrel_class.hpp
+script/squirrel_helper.hpp
+script/squirrel_helper_type.hpp
+script/squirrel_std.cpp
+script/squirrel_std.hpp
+
+# Squirrel
+3rdparty/squirrel/squirrel/sqapi.cpp
+3rdparty/squirrel/squirrel/sqbaselib.cpp
+3rdparty/squirrel/squirrel/sqclass.cpp
+3rdparty/squirrel/squirrel/sqcompiler.cpp
+3rdparty/squirrel/squirrel/sqdebug.cpp
+3rdparty/squirrel/squirrel/sqfuncstate.cpp
+3rdparty/squirrel/squirrel/sqlexer.cpp
+3rdparty/squirrel/squirrel/sqmem.cpp
+3rdparty/squirrel/squirrel/sqobject.cpp
+3rdparty/squirrel/squirrel/sqstate.cpp
+3rdparty/squirrel/sqstdlib/sqstdaux.cpp
+3rdparty/squirrel/squirrel/sqtable.cpp
+3rdparty/squirrel/squirrel/sqvm.cpp
+
+# Squirrel headers
+3rdparty/squirrel/squirrel/sqarray.h
+3rdparty/squirrel/squirrel/sqclass.h
+3rdparty/squirrel/squirrel/sqclosure.h
+3rdparty/squirrel/squirrel/sqcompiler.h
+3rdparty/squirrel/squirrel/sqfuncproto.h
+3rdparty/squirrel/squirrel/sqfuncstate.h
+3rdparty/squirrel/squirrel/sqlexer.h
+3rdparty/squirrel/squirrel/sqobject.h
+3rdparty/squirrel/squirrel/sqopcodes.h
+3rdparty/squirrel/squirrel/sqpcheader.h
+3rdparty/squirrel/squirrel/sqstate.h
+3rdparty/squirrel/include/sqstdaux.h
+3rdparty/squirrel/include/sqstdblob.h
+3rdparty/squirrel/sqstdlib/sqstdblobimpl.h
+3rdparty/squirrel/include/sqstdio.h
+3rdparty/squirrel/include/sqstdmath.h
+3rdparty/squirrel/sqstdlib/sqstdstream.h
+3rdparty/squirrel/include/sqstdstring.h
+3rdparty/squirrel/include/sqstdsystem.h
+3rdparty/squirrel/squirrel/sqstring.h
+3rdparty/squirrel/squirrel/sqtable.h
+3rdparty/squirrel/include/squirrel.h
+3rdparty/squirrel/squirrel/squserdata.h
+3rdparty/squirrel/squirrel/squtils.h
+3rdparty/squirrel/squirrel/sqvm.h
+
+# AI Core
+ai/ai.hpp
+ai/ai_config.cpp
+ai/ai_config.hpp
+ai/ai_core.cpp
+ai/ai_gui.cpp
+ai/ai_gui.hpp
+ai/ai_info.cpp
+ai/ai_info.hpp
+ai/ai_info_dummy.cpp
+ai/ai_instance.cpp
+ai/ai_instance.hpp
+ai/ai_scanner.cpp
+ai/ai_scanner.hpp
+ai/ai_storage.hpp
+
+# AI API
+ai/api/ai_abstractlist.hpp
+ai/api/ai_accounting.hpp
+ai/api/ai_airport.hpp
+ai/api/ai_base.hpp
+ai/api/ai_bridge.hpp
+ai/api/ai_bridgelist.hpp
+ai/api/ai_cargo.hpp
+ai/api/ai_cargolist.hpp
+ai/api/ai_company.hpp
+ai/api/ai_controller.hpp
+ai/api/ai_date.hpp
+ai/api/ai_depotlist.hpp
+ai/api/ai_engine.hpp
+ai/api/ai_enginelist.hpp
+ai/api/ai_error.hpp
+ai/api/ai_event.hpp
+ai/api/ai_event_types.hpp
+ai/api/ai_execmode.hpp
+ai/api/ai_gamesettings.hpp
+ai/api/ai_group.hpp
+ai/api/ai_grouplist.hpp
+ai/api/ai_industry.hpp
+ai/api/ai_industrylist.hpp
+ai/api/ai_industrytype.hpp
+ai/api/ai_industrytypelist.hpp
+ai/api/ai_list.hpp
+ai/api/ai_log.hpp
+ai/api/ai_map.hpp
+ai/api/ai_marine.hpp
+ai/api/ai_object.hpp
+ai/api/ai_order.hpp
+ai/api/ai_rail.hpp
+ai/api/ai_railtypelist.hpp
+ai/api/ai_road.hpp
+ai/api/ai_sign.hpp
+ai/api/ai_station.hpp
+ai/api/ai_stationlist.hpp
+ai/api/ai_subsidy.hpp
+ai/api/ai_subsidylist.hpp
+ai/api/ai_testmode.hpp
+ai/api/ai_tile.hpp
+ai/api/ai_tilelist.hpp
+ai/api/ai_town.hpp
+ai/api/ai_townlist.hpp
+ai/api/ai_tunnel.hpp
+ai/api/ai_types.hpp
+ai/api/ai_vehicle.hpp
+ai/api/ai_vehiclelist.hpp
+ai/api/ai_waypoint.hpp
+ai/api/ai_waypointlist.hpp
+
+# AI API Implementation
+ai/api/ai_abstractlist.cpp
+ai/api/ai_accounting.cpp
+ai/api/ai_airport.cpp
+ai/api/ai_base.cpp
+ai/api/ai_bridge.cpp
+ai/api/ai_bridgelist.cpp
+ai/api/ai_cargo.cpp
+ai/api/ai_cargolist.cpp
+ai/api/ai_company.cpp
+ai/api/ai_controller.cpp
+ai/api/ai_date.cpp
+ai/api/ai_depotlist.cpp
+ai/api/ai_engine.cpp
+ai/api/ai_enginelist.cpp
+ai/api/ai_error.cpp
+ai/api/ai_event.cpp
+ai/api/ai_event_types.cpp
+ai/api/ai_execmode.cpp
+ai/api/ai_gamesettings.cpp
+ai/api/ai_group.cpp
+ai/api/ai_grouplist.cpp
+ai/api/ai_industry.cpp
+ai/api/ai_industrylist.cpp
+ai/api/ai_industrytype.cpp
+ai/api/ai_industrytypelist.cpp
+ai/api/ai_list.cpp
+ai/api/ai_log.cpp
+ai/api/ai_map.cpp
+ai/api/ai_marine.cpp
+ai/api/ai_object.cpp
+ai/api/ai_order.cpp
+ai/api/ai_rail.cpp
+ai/api/ai_railtypelist.cpp
+ai/api/ai_road.cpp
+ai/api/ai_sign.cpp
+ai/api/ai_station.cpp
+ai/api/ai_stationlist.cpp
+ai/api/ai_subsidy.cpp
+ai/api/ai_subsidylist.cpp
+ai/api/ai_testmode.cpp
+ai/api/ai_tile.cpp
+ai/api/ai_tilelist.cpp
+ai/api/ai_town.cpp
+ai/api/ai_townlist.cpp
+ai/api/ai_tunnel.cpp
+ai/api/ai_vehicle.cpp
+ai/api/ai_vehiclelist.cpp
+ai/api/ai_waypoint.cpp
+ai/api/ai_waypointlist.cpp
+
+# Blitters
+#if DEDICATED
+#else
+blitter/32bpp_anim.cpp
+blitter/32bpp_anim.hpp
+blitter/32bpp_base.cpp
+blitter/32bpp_base.hpp
+blitter/32bpp_optimized.cpp
+blitter/32bpp_optimized.hpp
+blitter/32bpp_simple.cpp
+blitter/32bpp_simple.hpp
+blitter/8bpp_base.cpp
+blitter/8bpp_base.hpp
+blitter/8bpp_debug.cpp
+blitter/8bpp_debug.hpp
+blitter/8bpp_optimized.cpp
+blitter/8bpp_optimized.hpp
+blitter/8bpp_simple.cpp
+blitter/8bpp_simple.hpp
+#end
+blitter/base.hpp
+blitter/factory.hpp
+blitter/null.cpp
+blitter/null.hpp
+
+# Drivers
+music/music_driver.hpp
+sound/sound_driver.hpp
+video/video_driver.hpp
+
+# Sprite loaders
+spriteloader/grf.cpp
+spriteloader/grf.hpp
+#if PNG
+spriteloader/png.cpp
+spriteloader/png.hpp
+#end
+spriteloader/spriteloader.hpp
+
+# NewGRF
+newgrf.cpp
+newgrf_canal.cpp
+newgrf_cargo.cpp
+newgrf_commons.cpp
+newgrf_config.cpp
+newgrf_engine.cpp
+newgrf_generic.cpp
+newgrf_house.cpp
+newgrf_industries.cpp
+newgrf_industrytiles.cpp
+newgrf_sound.cpp
+newgrf_spritegroup.cpp
+newgrf_station.cpp
+newgrf_storage.cpp
+newgrf_text.cpp
+newgrf_town.cpp
+newgrf_townname.cpp
+
+# Map Accessors
+bridge_map.cpp
+bridge_map.h
+clear_map.h
+industry_map.h
+rail_map.h
+road_map.cpp
+road_map.h
+station_map.h
+tile_map.h
+town_map.h
+tree_map.h
+tunnel_map.cpp
+tunnel_map.h
+tunnelbridge_map.h
+unmovable_map.h
+void_map.h
+water_map.h
+
+# Misc
+misc/array.hpp
+misc/binaryheap.hpp
+misc/blob.hpp
+misc/countedobj.cpp
+misc/countedptr.hpp
+misc/crc32.hpp
+misc/dbg_helpers.cpp
+misc/dbg_helpers.h
+misc/fixedsizearray.hpp
+misc/hashtable.hpp
+misc/str.hpp
+misc/strapi.hpp
+
+# Network Core
+network/core/address.cpp
+network/core/address.h
+network/core/config.h
+network/core/core.cpp
+network/core/core.h
+network/core/game.h
+network/core/host.cpp
+network/core/host.h
+network/core/os_abstraction.h
+network/core/packet.cpp
+network/core/packet.h
+network/core/tcp.cpp
+network/core/tcp.h
+network/core/tcp_connect.cpp
+network/core/tcp_content.cpp
+network/core/tcp_content.h
+network/core/tcp_game.cpp
+network/core/tcp_game.h
+network/core/udp.cpp
+network/core/udp.h
+
+# YAPF
+yapf/follow_track.hpp
+yapf/nodelist.hpp
+yapf/yapf.h
+yapf/yapf.hpp
+yapf/yapf_base.hpp
+yapf/yapf_common.hpp
+yapf/yapf_costbase.hpp
+yapf/yapf_costcache.hpp
+yapf/yapf_costrail.hpp
+yapf/yapf_destrail.hpp
+yapf/yapf_node.hpp
+yapf/yapf_node_rail.hpp
+yapf/yapf_node_road.hpp
+yapf/yapf_rail.cpp
+yapf/yapf_road.cpp
+yapf/yapf_ship.cpp
+
+# Video
+video/dedicated_v.cpp
+video/null_v.cpp
+#if DEDICATED
+#else
+#if ALLEGRO
+	video/allegro_v.cpp
+#end
+#if SDL
+	video/sdl_v.cpp
+#end
+#if WIN32
+	video/win32_v.cpp
+#end
+#if WINCE
+	video/win32_v.cpp
+#end
+#end
+
+# Music
+music/null_m.cpp
+#if DEDICATED
+#else
+#if ALLEGRO
+	music/allegro_m.cpp
+#end
+#if DIRECTMUSIC
+	music/dmusic.cpp
+#end
+#if WIN32
+	music/win32_m.cpp
+#else
+	#if WINCE
+	#else
+		#if PSP
+		#else
+			#if DOS
+			#else
+				music/extmidi.cpp
+			#end
+		#end
+	#end
+#end
+#if BEOS
+ 	music/bemidi.cpp
+#end
+#if LIBTIMIDITY
+	music/libtimidity.cpp
+#end
+#end
+
+# Sound
+sound/null_s.cpp
+#if DEDICATED
+#else
+#if ALLEGRO
+	sound/allegro_s.cpp
+#end
+#if SDL
+	sound/sdl_s.cpp
+#end
+#if WIN32
+	sound/win32_s.cpp
+#end
+#end
+
+#if OSX
+# OSX Files
+	os/macosx/macos.mm
+
+	#if DEDICATED
+	#else
+		music/qtmidi.cpp
+	#end
+
+	#if COCOA
+		video/cocoa/cocoa_v.mm
+		video/cocoa/event.mm
+		video/cocoa/fullscreen.mm
+		video/cocoa/wnd_quartz.mm
+		video/cocoa/wnd_quickdraw.mm
+		sound/cocoa_s.cpp
+		os/macosx/splash.cpp
+	#end
+#end
