@@ -108,6 +108,89 @@ enum GenerateLandscapeWindowWidgets {
 	GLAND_WATER_SW,
 };
 
+#ifdef N3DS
+static const Widget _generate_landscape_widgets[] = {
+{  WWT_CLOSEBOX,  RESIZE_NONE, COLOUR_BROWN,    0,  10,   0,  13, STR_00C5,                     STR_018B_CLOSE_WINDOW},
+{    WWT_CAPTION, RESIZE_NONE, COLOUR_BROWN,   11, 319,   0,  13, STR_WORLD_GENERATION_CAPTION, STR_NULL},
+{      WWT_PANEL, RESIZE_NONE, COLOUR_BROWN,    0, 319,  14, 313, 0x0,                          STR_NULL},
+
+/* Landscape selection */
+{   WWT_IMGBTN_2, RESIZE_NONE, COLOUR_ORANGE,   3,  79,  17,  71, SPR_SELECT_TEMPERATE,         STR_030E_SELECT_TEMPERATE_LANDSCAPE},    // GLAND_TEMPERATE
+{   WWT_IMGBTN_2, RESIZE_NONE, COLOUR_ORANGE,  82, 158,  17,  71, SPR_SELECT_SUB_ARCTIC,        STR_030F_SELECT_SUB_ARCTIC_LANDSCAPE},   // GLAND_ARCTIC
+{   WWT_IMGBTN_2, RESIZE_NONE, COLOUR_ORANGE, 161, 237,  17,  71, SPR_SELECT_SUB_TROPICAL,      STR_0310_SELECT_SUB_TROPICAL_LANDSCAPE}, // GLAND_TROPICAL
+{   WWT_IMGBTN_2, RESIZE_NONE, COLOUR_ORANGE, 240, 316,  17,  71, SPR_SELECT_TOYLAND,           STR_0311_SELECT_TOYLAND_LANDSCAPE},      // GLAND_TOYLAND
+
+/* Mapsize X */
+{       WWT_TEXT, RESIZE_NONE, COLOUR_ORANGE,   3, 111,  74, 84, STR_MAPSIZE,                  STR_NULL},                               // GLAND_MAPSIZE_X_TEXT
+{   WWT_DROPDOWN, RESIZE_NONE, COLOUR_ORANGE, 102, 149,  73, 84, STR_NUM_1,                    STR_NULL},                               // GLAND_MAPSIZE_X_PULLDOWN
+/* Mapsize Y */
+{       WWT_TEXT, RESIZE_NONE, COLOUR_ORANGE, 156, 165,  74, 84, STR_BY,                       STR_NULL},                               // GLAND_MAPSIZE_Y_TEXT
+{   WWT_DROPDOWN, RESIZE_NONE, COLOUR_ORANGE, 168, 215,  73, 84, STR_NUM_2,                    STR_NULL},                               // GLAND_MAPSIZE_Y_PULLDOWN
+
+/*  Number of towns */
+{       WWT_TEXT, RESIZE_NONE, COLOUR_ORANGE,  3, 110, 87, 97, STR_NUMBER_OF_TOWNS,          STR_NULL},                               // GLAND_TOWN_TEXT
+{   WWT_DROPDOWN, RESIZE_NONE, COLOUR_ORANGE, 102, 165, 86, 97, 0x0,                          STR_NULL},                               // GLAND_TOWN_PULLDOWN
+
+/* Number of industries */
+{       WWT_TEXT, RESIZE_NONE, COLOUR_ORANGE,   3, 110, 100, 110, STR_NUMBER_OF_INDUSTRIES,     STR_NULL},                               // GLAND_INDUSTRY_TEXT
+{   WWT_DROPDOWN, RESIZE_NONE, COLOUR_ORANGE, 102, 165, 99, 110, 0x0,                          STR_NULL},                               // GLAND_INDUSTRY_PULLDOWN
+
+/* Edit box for seed */
+{       WWT_TEXT, RESIZE_NONE, COLOUR_ORANGE,   3, 110, 113, 123, STR_RANDOM_SEED,              STR_NULL},                               // GLAND_RANDOM_TEXT
+{    WWT_EDITBOX, RESIZE_NONE, COLOUR_WHITE,  102, 197, 112, 123, STR_RANDOM_SEED_OSKTITLE,     STR_RANDOM_SEED_HELP},                   // GLAND_RANDOM_EDITBOX
+{    WWT_TEXTBTN, RESIZE_NONE, COLOUR_ORANGE, 204, 316, 112, 123, STR_RANDOM,                   STR_RANDOM_HELP},                        // GLAND_RANDOM_BUTTON
+
+/* Generate button */
+{    WWT_TEXTBTN, RESIZE_NONE, COLOUR_GREEN, 242, 316, 213, 236, STR_GENERATE,                 STR_NULL},                                // GLAND_GENERATE_BUTTON
+
+/* Start date */
+{       WWT_TEXT, RESIZE_NONE, COLOUR_ORANGE, 172, 202, 87, 97, STR_DATE,                     STR_NULL},                               // GLAND_START_DATE_TEXT1
+{     WWT_IMGBTN, RESIZE_NONE, COLOUR_ORANGE, 206, 217, 86, 97, SPR_ARROW_DOWN,               STR_029E_MOVE_THE_STARTING_DATE},        // GLAND_START_DATE_DOWN
+{    WWT_TEXTBTN, RESIZE_NONE, COLOUR_ORANGE, 218, 304, 86, 97, STR_GENERATE_DATE,            STR_NULL},                               // GLAND_START_DATE_TEXT
+{     WWT_IMGBTN, RESIZE_NONE, COLOUR_ORANGE, 305, 316, 86, 97, SPR_ARROW_UP,                 STR_029F_MOVE_THE_STARTING_DATE},        // GLAND_START_DATE_UP
+
+/* Snow line */
+{       WWT_TEXT, RESIZE_NONE, COLOUR_ORANGE, 172, 268, 100, 110, STR_SNOW_LINE_HEIGHT,         STR_NULL},                               // GLAND_SNOW_LEVEL_TEXT1
+{     WWT_IMGBTN, RESIZE_NONE, COLOUR_ORANGE, 262, 273, 99, 110, SPR_ARROW_DOWN,               STR_SNOW_LINE_DOWN},                     // GLAND_SNOW_LEVEL_DOWN
+{    WWT_TEXTBTN, RESIZE_NONE, COLOUR_ORANGE, 274, 304, 99, 110, STR_NUM_3,                    STR_NULL},                               // GLAND_SNOW_LEVEL_TEXT
+{     WWT_IMGBTN, RESIZE_NONE, COLOUR_ORANGE, 305, 316, 99, 110, SPR_ARROW_UP,                 STR_SNOW_LINE_UP},                       // GLAND_SNOW_LEVEL_UP
+
+/* Tree placer */
+{       WWT_TEXT, RESIZE_NONE, COLOUR_ORANGE,   3, 110, 139, 149, STR_TREE_PLACER,              STR_NULL},                               // GLAND_TREE_TEXT
+{   WWT_DROPDOWN, RESIZE_NONE, COLOUR_ORANGE, 102, 221, 138, 149, 0x0,                          STR_NULL},                               // GLAND_TREE_PULLDOWN
+
+/* Landscape generator */
+{       WWT_TEXT, RESIZE_NONE, COLOUR_ORANGE,   3, 110, 126, 136, STR_LAND_GENERATOR,           STR_NULL},                               // GLAND_LANDSCAPE_TEXT
+{   WWT_DROPDOWN, RESIZE_NONE, COLOUR_ORANGE, 102, 221, 125, 136, 0x0,                          STR_NULL},                               // GLAND_LANDSCAPE_PULLDOWN
+
+/* Terrain type */
+{       WWT_TEXT, RESIZE_NONE, COLOUR_ORANGE,   3, 110, 152, 162, STR_TERRAIN_TYPE,             STR_NULL},                               // GLAND_TERRAIN_TEXT
+{   WWT_DROPDOWN, RESIZE_NONE, COLOUR_ORANGE, 102, 221, 151, 162, 0x0,                          STR_NULL},                               // GLAND_TERRAIN_PULLDOWN
+
+/* Water quantity */
+{       WWT_TEXT, RESIZE_NONE, COLOUR_ORANGE,   3, 110, 165, 175, STR_QUANTITY_OF_SEA_LAKES,    STR_NULL},                               // GLAND_WATER_TEXT
+{   WWT_DROPDOWN, RESIZE_NONE, COLOUR_ORANGE, 102, 221, 164, 175, 0x0,                          STR_NULL},                               // GLAND_WATER_PULLDOWN
+
+/* Map smoothness */
+{       WWT_TEXT, RESIZE_NONE, COLOUR_ORANGE,   3, 110, 178, 188, STR_SMOOTHNESS,               STR_NULL},                               // GLAND_SMOOTHNESS_TEXT
+{   WWT_DROPDOWN, RESIZE_NONE, COLOUR_ORANGE, 102, 221, 177, 188, 0x0,                          STR_NULL},                               // GLAND_SMOOTHNESS_PULLDOWN
+
+/* Water borders */
+{       WWT_TEXT, RESIZE_NONE, COLOUR_ORANGE,   3, 110, 191, 201, STR_BORDER_TYPE,             STR_NULL},                               // GLAND_BORDER_TYPES
+{ WWT_PUSHTXTBTN, RESIZE_NONE, COLOUR_ORANGE, 102, 221, 190, 201, STR_BORDER_RANDOMIZE,        STR_NULL},                               // GLAND_BORDERS_RANDOM
+{       WWT_TEXT, RESIZE_NONE, COLOUR_ORANGE,   3,  95, 208, 218, STR_NORTHWEST,               STR_NULL},                               // GLAND_WATER_NW_TEXT
+/* Set northeast and southeast text off screen on the 3ds, there simply isn't enough room.
+ * Hopefully just northwest and southwest will give players a hint at what the buttons to the right do. */
+{       WWT_TEXT, RESIZE_NONE, COLOUR_ORANGE, 320, 320, 240, 240, STR_NORTHEAST,               STR_NULL},                               // GLAND_WATER_NE_TEXT
+{       WWT_TEXT, RESIZE_NONE, COLOUR_ORANGE, 320, 320, 240, 240, STR_SOUTHEAST,               STR_NULL},                               // GLAND_WATER_SE_TEXT
+{       WWT_TEXT, RESIZE_NONE, COLOUR_ORANGE,   3,  95, 220, 230, STR_SOUTHWEST,               STR_NULL},                               // GLAND_WATER_SW_TEXT
+{ WWT_PUSHTXTBTN, RESIZE_NONE, COLOUR_ORANGE, 90, 162, 206, 217, 0x0,                         STR_NORTHWEST},                          // GLAND_WATER_NW
+{ WWT_PUSHTXTBTN, RESIZE_NONE, COLOUR_ORANGE, 163, 235, 206, 217, 0x0,                         STR_NORTHEAST},                          // GLAND_WATER_NE
+{ WWT_PUSHTXTBTN, RESIZE_NONE, COLOUR_ORANGE, 163, 235, 218, 229, 0x0,                         STR_SOUTHEAST},                          // GLAND_WATER_SE
+{ WWT_PUSHTXTBTN, RESIZE_NONE, COLOUR_ORANGE, 90, 162, 218, 229, 0x0,                         STR_SOUTHWEST},                          // GLAND_WATER_SW
+{   WIDGETS_END},
+};
+#else
 static const Widget _generate_landscape_widgets[] = {
 {  WWT_CLOSEBOX,  RESIZE_NONE, COLOUR_BROWN,    0,  10,   0,  13, STR_00C5,                     STR_018B_CLOSE_WINDOW},
 {    WWT_CAPTION, RESIZE_NONE, COLOUR_BROWN,   11, 337,   0,  13, STR_WORLD_GENERATION_CAPTION, STR_NULL},
@@ -187,6 +270,7 @@ static const Widget _generate_landscape_widgets[] = {
 { WWT_PUSHTXTBTN, RESIZE_NONE, COLOUR_ORANGE, 100, 172, 292, 303, 0x0,                         STR_SOUTHWEST},                          // GLAND_WATER_SW
 {   WIDGETS_END},
 };
+#endif /* N3DS */
 
 static const Widget _heightmap_load_widgets[] = {
 {   WWT_CLOSEBOX, RESIZE_NONE, COLOUR_BROWN,    0,  10,   0,  13, STR_00C5,                     STR_018B_CLOSE_WINDOW},
@@ -638,7 +722,11 @@ struct GenerateLandscapeWindow : public QueryStringBaseWindow {
 };
 
 static const WindowDesc _generate_landscape_desc(
+	#ifdef N3DS
+	WDP_CENTER, WDP_CENTER, 320, 240, 320, 240,
+	#else
 	WDP_CENTER, WDP_CENTER, 338, 313, 338, 313,
+	#endif
 	WC_GENERATE_LANDSCAPE, WC_NONE,
 	WDF_STD_TOOLTIPS | WDF_DEF_WIDGET | WDF_UNCLICK_BUTTONS,
 	_generate_landscape_widgets
