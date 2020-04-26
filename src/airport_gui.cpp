@@ -272,6 +272,34 @@ public:
 	}
 };
 
+#ifdef N3DS /* Remove the labels about the type of airport to make room. */
+static const Widget _build_airport_picker_widgets[] = {
+{   WWT_CLOSEBOX,   RESIZE_NONE,   COLOUR_DARK_GREEN,   0,    10,     0,    13, STR_00C5,                         STR_018B_CLOSE_WINDOW},
+{    WWT_CAPTION,   RESIZE_NONE,   COLOUR_DARK_GREEN,  11,   147,     0,    13, STR_3001_AIRPORT_SELECTION,       STR_018C_WINDOW_TITLE_DRAG_THIS},
+{      WWT_PANEL,   RESIZE_NONE,   COLOUR_DARK_GREEN,   0,   147,    14,    41, 0x0,                              STR_NULL},
+{      WWT_PANEL,   RESIZE_NONE,   COLOUR_PALE_GREEN,   0,     0,    13,    13, 0x0,               STR_NULL},
+{      WWT_PANEL,   RESIZE_NONE,   COLOUR_DARK_GREEN,   0,   147,    42,    67, 0x0,                              STR_NULL},
+{      WWT_PANEL,   RESIZE_NONE,   COLOUR_PALE_GREEN,   0,     0,    13,    13, 0x0,               STR_NULL},
+{      WWT_PANEL,   RESIZE_NONE,   COLOUR_DARK_GREEN,   0,   147,    68,    94, 0x0,                              STR_NULL},
+{      WWT_PANEL,   RESIZE_NONE,   COLOUR_PALE_GREEN,   0,     0,    13,    13, 0x0,                 STR_NULL},
+{      WWT_PANEL,   RESIZE_NONE,   COLOUR_DARK_GREEN,   0,   147,    95,   133, 0x0,                              STR_NULL},
+{      WWT_PANEL,   RESIZE_NONE,   COLOUR_PALE_GREEN,   0,     0,    13,    13, 0x0,                    STR_NULL},
+{      WWT_PANEL,   RESIZE_NONE,   COLOUR_DARK_GREEN,   0,   147,   134,   195, 0x0,                              STR_NULL}, // bottom general box
+{    WWT_TEXTBTN,   RESIZE_NONE,   COLOUR_GREY,         2,   145,    16,    27, STR_SMALL_AIRPORT,                STR_3058_SELECT_SIZE_TYPE_OF_AIRPORT},
+{    WWT_TEXTBTN,   RESIZE_NONE,   COLOUR_GREY,         2,   145,    43,    54, STR_CITY_AIRPORT,                 STR_3058_SELECT_SIZE_TYPE_OF_AIRPORT},
+{    WWT_TEXTBTN,   RESIZE_NONE,   COLOUR_GREY,         2,   145,    97,   108, STR_HELIPORT,                     STR_3058_SELECT_SIZE_TYPE_OF_AIRPORT},
+{    WWT_TEXTBTN,   RESIZE_NONE,   COLOUR_GREY,         2,   145,    55,    66, STR_METRO_AIRPORT ,               STR_3058_SELECT_SIZE_TYPE_OF_AIRPORT},
+{    WWT_TEXTBTN,   RESIZE_NONE,   COLOUR_GREY,         2,   145,    70,    81, STR_INTERNATIONAL_AIRPORT,        STR_3058_SELECT_SIZE_TYPE_OF_AIRPORT},
+{    WWT_TEXTBTN,   RESIZE_NONE,   COLOUR_GREY,         2,   145,    28,    39, STR_COMMUTER_AIRPORT,             STR_3058_SELECT_SIZE_TYPE_OF_AIRPORT},
+{    WWT_TEXTBTN,   RESIZE_NONE,   COLOUR_GREY,         2,   145,   121,   132, STR_HELIDEPOT,                    STR_3058_SELECT_SIZE_TYPE_OF_AIRPORT},
+{    WWT_TEXTBTN,   RESIZE_NONE,   COLOUR_GREY,         2,   145,    82,    93, STR_INTERCONTINENTAL_AIRPORT,     STR_3058_SELECT_SIZE_TYPE_OF_AIRPORT},
+{    WWT_TEXTBTN,   RESIZE_NONE,   COLOUR_GREY,         2,   145,   109,   120, STR_HELISTATION,                  STR_3058_SELECT_SIZE_TYPE_OF_AIRPORT},
+{    WWT_TEXTBTN,   RESIZE_NONE,   COLOUR_GREY,        14,    73,   147,   158, STR_02DB_OFF,                     STR_3065_DON_T_HIGHLIGHT_COVERAGE},
+{    WWT_TEXTBTN,   RESIZE_NONE,   COLOUR_GREY,        74,   133,   147,   158, STR_02DA_ON,                      STR_3064_HIGHLIGHT_COVERAGE_AREA},
+{      WWT_LABEL,   RESIZE_NONE,   COLOUR_DARK_GREEN,   0,   147,   134,   147, STR_3066_COVERAGE_AREA_HIGHLIGHT, STR_NULL},
+{   WIDGETS_END},
+};
+#else
 static const Widget _build_airport_picker_widgets[] = {
 {   WWT_CLOSEBOX,   RESIZE_NONE,   COLOUR_DARK_GREEN,   0,    10,     0,    13, STR_00C5,                         STR_018B_CLOSE_WINDOW},
 {    WWT_CAPTION,   RESIZE_NONE,   COLOUR_DARK_GREEN,  11,   147,     0,    13, STR_3001_AIRPORT_SELECTION,       STR_018C_WINDOW_TITLE_DRAG_THIS},
@@ -298,13 +326,23 @@ static const Widget _build_airport_picker_widgets[] = {
 {      WWT_LABEL,   RESIZE_NONE,   COLOUR_DARK_GREEN,   0,   147,   178,   191, STR_3066_COVERAGE_AREA_HIGHLIGHT, STR_NULL},
 {   WIDGETS_END},
 };
+#endif /* N3DS */ 
 
+#ifdef N3DS
+static const WindowDesc _build_airport_desc(
+	WDP_AUTO, WDP_AUTO, 148, 196, 148, 196,
+	WC_BUILD_STATION, WC_BUILD_TOOLBAR,
+	WDF_STD_TOOLTIPS | WDF_STD_BTN | WDF_DEF_WIDGET | WDF_CONSTRUCTION,
+	_build_airport_picker_widgets
+);
+#else
 static const WindowDesc _build_airport_desc(
 	WDP_AUTO, WDP_AUTO, 148, 240, 148, 240,
 	WC_BUILD_STATION, WC_BUILD_TOOLBAR,
 	WDF_STD_TOOLTIPS | WDF_STD_BTN | WDF_DEF_WIDGET | WDF_CONSTRUCTION,
 	_build_airport_picker_widgets
 );
+#endif /* N3DS */
 
 static void ShowBuildAirportPicker(Window *parent)
 {

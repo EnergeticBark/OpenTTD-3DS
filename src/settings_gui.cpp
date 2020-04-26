@@ -369,6 +369,23 @@ void ShowGameOptions()
 extern void StartupEconomy();
 
 /* Widget definition for the game difficulty settings window */
+#if N3DS
+static const Widget _game_difficulty_widgets[] = {
+{   WWT_CLOSEBOX,   RESIZE_NONE,  COLOUR_MAUVE,      0,    10,     0,    13, STR_00C5,                     STR_018B_CLOSE_WINDOW},           // GDW_CLOSEBOX
+{    WWT_CAPTION,   RESIZE_NONE,  COLOUR_MAUVE,     11,   369,     0,    13, STR_6800_DIFFICULTY_LEVEL,    STR_018C_WINDOW_TITLE_DRAG_THIS}, // GDW_CAPTION
+{      WWT_PANEL,   RESIZE_NONE,  COLOUR_MAUVE,      0,   369,    14,    41, 0x0,                          STR_NULL},                        // GDW_UPPER_BG
+{ WWT_PUSHTXTBTN,   RESIZE_NONE,  COLOUR_YELLOW,    10,    96,    16,    27, STR_6801_EASY,                STR_NULL},                        // GDW_LVL_EASY
+{ WWT_PUSHTXTBTN,   RESIZE_NONE,  COLOUR_YELLOW,    97,   183,    16,    27, STR_6802_MEDIUM,              STR_NULL},                        // GDW_LVL_MEDIUM
+{ WWT_PUSHTXTBTN,   RESIZE_NONE,  COLOUR_YELLOW,   184,   270,    16,    27, STR_6803_HARD,                STR_NULL},                        // GDW_LVL_HARD
+{ WWT_PUSHTXTBTN,   RESIZE_NONE,  COLOUR_YELLOW,   271,   357,    16,    27, STR_6804_CUSTOM,              STR_NULL},                        // GDW_LVL_CUSTOM
+{    WWT_TEXTBTN,   RESIZE_NONE,  COLOUR_GREEN,     10,   357,    28,    39, STR_6838_SHOW_HI_SCORE_CHART, STR_NULL},                        // GDW_HIGHSCORE
+{      WWT_PANEL,   RESIZE_NONE,  COLOUR_MAUVE,      0,   369,    42,   223, 0x0,                          STR_NULL},                        // GDW_SETTING_BG
+{      WWT_PANEL,   RESIZE_NONE,  COLOUR_MAUVE,      0,   369,   224,   239, 0x0,                          STR_NULL},                        // GDW_LOWER_BG
+{ WWT_PUSHTXTBTN,   RESIZE_NONE,  COLOUR_YELLOW,   105,   185,   226,   237, STR_OPTIONS_SAVE_CHANGES,     STR_NULL},                        // GDW_ACCEPT
+{ WWT_PUSHTXTBTN,   RESIZE_NONE,  COLOUR_YELLOW,   186,   266,   226,   237, STR_012E_CANCEL,              STR_NULL},                        // GDW_CANCEL
+{   WIDGETS_END},
+};
+#else
 static const Widget _game_difficulty_widgets[] = {
 {   WWT_CLOSEBOX,   RESIZE_NONE,  COLOUR_MAUVE,      0,    10,     0,    13, STR_00C5,                     STR_018B_CLOSE_WINDOW},           // GDW_CLOSEBOX
 {    WWT_CAPTION,   RESIZE_NONE,  COLOUR_MAUVE,     11,   369,     0,    13, STR_6800_DIFFICULTY_LEVEL,    STR_018C_WINDOW_TITLE_DRAG_THIS}, // GDW_CAPTION
@@ -384,14 +401,24 @@ static const Widget _game_difficulty_widgets[] = {
 { WWT_PUSHTXTBTN,   RESIZE_NONE,  COLOUR_YELLOW,   186,   266,   265,   276, STR_012E_CANCEL,              STR_NULL},                        // GDW_CANCEL
 {   WIDGETS_END},
 };
+#endif
 
 /* Window definition for the game difficulty settings window */
+#ifdef N3DS
+static const WindowDesc _game_difficulty_desc(
+	WDP_CENTER, WDP_CENTER, 370, 240, 370, 240,
+	WC_GAME_OPTIONS, WC_NONE,
+	WDF_STD_TOOLTIPS | WDF_STD_BTN | WDF_DEF_WIDGET,
+	_game_difficulty_widgets
+);
+#else
 static const WindowDesc _game_difficulty_desc(
 	WDP_CENTER, WDP_CENTER, 370, 279, 370, 279,
 	WC_GAME_OPTIONS, WC_NONE,
 	WDF_STD_TOOLTIPS | WDF_STD_BTN | WDF_DEF_WIDGET,
 	_game_difficulty_widgets
 );
+#endif
 
 void SetDifficultyLevel(int mode, DifficultySettings *gm_opt);
 

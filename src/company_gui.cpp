@@ -345,7 +345,11 @@ static void DoShowCompanyFinances(CompanyID company, bool show_small, bool show_
 
 void ShowCompanyFinances(CompanyID company)
 {
+	#ifdef N3DS /* Show the small version of the finances page by default on the 3DS */
+	DoShowCompanyFinances(company, true, false);
+	#else
 	DoShowCompanyFinances(company, false, false);
+	#endif /* N3DS */
 }
 
 /* List of colours for the livery window */
