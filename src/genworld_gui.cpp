@@ -271,7 +271,6 @@ static const Widget _generate_landscape_widgets[] = {
 {   WIDGETS_END},
 };
 #endif /* N3DS */
-
 static const Widget _heightmap_load_widgets[] = {
 {   WWT_CLOSEBOX, RESIZE_NONE, COLOUR_BROWN,    0,  10,   0,  13, STR_00C5,                     STR_018B_CLOSE_WINDOW},
 {    WWT_CAPTION, RESIZE_NONE, COLOUR_BROWN,   11, 337,   0,  13, STR_WORLD_GENERATION_CAPTION, STR_NULL},

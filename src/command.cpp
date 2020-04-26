@@ -505,10 +505,12 @@ bool DoCommandP(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallbac
 
 	/** Spectator has no rights except for the (dedicated) server which
 	 * is/can be a spectator but as the server it can do anything */
+	#ifndef N3DS /* This check is stupid. Whenever I compile without networking I can't change any options on the title screen. */
 	if (_current_company == COMPANY_SPECTATOR && !_network_server) {
 		if (my_cmd) ShowErrorMessage(_error_message, error_part1, x, y);
 		return false;
 	}
+	#endif /* N3DS */
 
 	/* get pointer to command handler */
 	byte cmd_id = cmd & CMD_ID_MASK;
