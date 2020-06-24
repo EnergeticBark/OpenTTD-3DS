@@ -557,7 +557,9 @@ Window::~Window()
 
 	free(this->widget);
 
-	this->window_class = WC_INVALID;
+	/* N3DS. 
+	 * Backported this line from a later version of OpenTTD so optimizations will no longer break on new versions of GCC */
+	const_cast<volatile WindowClass &>(this->window_class) = WC_INVALID;
 }
 
 /**

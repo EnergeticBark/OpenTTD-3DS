@@ -24,6 +24,10 @@ static FVideoDriver_SDL iFVideoDriver_SDL;
 static SDL_Surface *_sdl_screen;
 static bool _all_modes;
 
+#ifdef N3DS
+static SDL_Joystick *_3ds_joystick;
+#endif
+
 #define MAX_DIRTY_RECTS 100
 static SDL_Rect _dirty_rects[MAX_DIRTY_RECTS];
 static int _num_dirty_rects;
@@ -431,7 +435,11 @@ const char *VideoDriver_SDL::Start(const char * const *parm)
 {
 	char buf[30];
 
+	#ifndef N3DS
 	const char *s = SdlOpen(SDL_INIT_VIDEO);
+	#else
+	const char *s = SdlOpen(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK);
+	#endif /* N3DS */ 
 	if (s != NULL) return s;
 
 	SDL_CALL SDL_VideoDriverName(buf, 30);
@@ -443,6 +451,12 @@ const char *VideoDriver_SDL::Start(const char * const *parm)
 
 	SDL_CALL SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 	SDL_CALL SDL_EnableUNICODE(1);
+	
+	#ifdef N3DS
+	// Enable the 3DS's controls to be used as a joystick.
+	_3ds_joystick = SDL_JoystickOpen(0);
+	SDL_JoystickEventState(SDL_ENABLE);
+	#endif /* N3DS */
 	return NULL;
 }
 
@@ -495,11 +509,19 @@ void VideoDriver_SDL::MainLoop()
 			_shift_pressed = !!(mod & KMOD_SHIFT);
 
 			/* determine which directional keys are down */
+			#ifdef N3DS
+			_dirkeys =
+				(SDL_JoystickGetButton(_3ds_joystick, 9) ? 1 : 0) |
+				(SDL_JoystickGetButton(_3ds_joystick, 10) ? 2 : 0) |
+				(SDL_JoystickGetButton(_3ds_joystick, 11) ? 4 : 0) |
+				(SDL_JoystickGetButton(_3ds_joystick, 8) ? 8 : 0);
+			#else
 			_dirkeys =
 				(keys[SDLK_LEFT]  ? 1 : 0) |
 				(keys[SDLK_UP]    ? 2 : 0) |
 				(keys[SDLK_RIGHT] ? 4 : 0) |
 				(keys[SDLK_DOWN]  ? 8 : 0);
+			#endif
 
 			if (old_ctrl_pressed != _ctrl_pressed) HandleCtrlChanged();
 

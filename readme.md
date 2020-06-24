@@ -9,7 +9,7 @@ I've only tried compiling this on Linux so I'm not sure if it will work on a non
 * Install the 3ds-sdl library using (dkp-)pacman
 * From the root of the project directory, run:
 ```bash
-./configure --os=N3DS --host $DEVKITARM/bin/arm-none-eabi --enable-static --prefix-dir=$DEVKITPRO --with-sdl --without-png --without-threads --disable-network --disable-unicode --without-libfontconfig --without-zlib --without-libfreetype --without-icu --enable-debug=3
+./configure --os=N3DS --host $DEVKITARM/bin/arm-none-eabi --enable-static --prefix-dir=$DEVKITPRO --with-sdl --without-png --without-threads --disable-network --disable-unicode --without-libfontconfig --without-zlib --without-libfreetype --without-icu --enable-debug=2
 ```
 * Type:
 ```bash
