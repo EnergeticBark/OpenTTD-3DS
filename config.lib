@@ -682,7 +682,7 @@ check_params() {
 		log 1 "suppress language errors... no"
 	fi
 
-	if [ "$enable_debug" = "0" ] && [ "$enable_profiling" = "0" ] && [ "$enable_strip" != "0" ]; then
+	if [ "$enable_debug" = "0" ] && [ "$enable_profiling" = "0" ] && [ "$enable_strip" != "0" ] && [ "$os" != "N3DS"]; then
 		if [ "$os" = "MORPHOS" ]; then
 			strip_arg="--strip-all --strip-unneeded --remove-section .comment"
 		elif [ "$os" = "OSX" ]; then
@@ -1182,9 +1182,9 @@ make_cflags_and_ldflags() {
 		LIBS="$LIBS -lmidi -lbe"
 	fi
 
-	# 3ds stuffs CLEAN BEFORE RELEASE
+	# 3ds stuff
  	if [ "$os" = "N3DS" ]; then
- 		CFLAGS="$CFLAGS -fno-gcse -fno-cse-follow-jumps -fpermissive -Wno-narrowing -fno-short-enums -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft -I$DEVKITPRO/libctru/include"
+ 		CFLAGS="$CFLAGS -fno-inline -fno-gcse -fno-cse-follow-jumps -fpermissive -Wno-narrowing -fno-short-enums -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft -I$DEVKITPRO/libctru/include"
  		LIBS="$LIBS -L$DEVKITPRO/portlibs/3ds/lib -specs=3dsx.specs -g -march=armv6k -mtune=mpcore -mfloat-abi=hard -lSDL -L$DEVKITPRO/libctru/lib -lcitro3d -lctru"
  	fi
 

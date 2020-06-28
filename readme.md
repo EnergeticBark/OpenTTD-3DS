@@ -9,7 +9,7 @@ I've only tried compiling this on Linux so I'm not sure if it will work on a non
 * Install the 3ds-sdl library using (dkp-)pacman
 * From the root of the project directory, run:
 ```bash
-./configure --os=N3DS --host $DEVKITARM/bin/arm-none-eabi --enable-static --prefix-dir=$DEVKITPRO --with-sdl --without-png --without-threads --disable-network --disable-unicode --without-libfontconfig --without-zlib --without-libfreetype --without-icu --enable-debug=2
+./configure --os=N3DS --host $DEVKITARM/bin/arm-none-eabi --enable-static --prefix-dir=$DEVKITPRO --with-sdl --without-png --without-threads --disable-network --disable-unicode --without-libfontconfig --without-zlib --without-libfreetype --without-icu
 ```
 * Type:
 ```bash
@@ -25,7 +25,7 @@ Memory restrictions. The later versions I tried would always crash, even with a 
 One of the other reasons I picked 0.7.0 specifically, is it's the version that the DS port uses. This gives me something I can borrow some ideas from.
 It also has plenty of the features you would expect from OpenTTD, like OpenGFX support.
 ## To do
-- [ ] Resize UI elements to better fit the 3DS's low screen resolution. 
+- [x] Resize UI elements to better fit the 3DS's low screen resolution. 
 - [ ] Put a viewport on the top screen, right now it's used as a console.
 - [ ] Networking support.
 - [ ] Fix music.

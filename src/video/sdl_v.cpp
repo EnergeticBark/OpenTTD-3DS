@@ -453,6 +453,8 @@ const char *VideoDriver_SDL::Start(const char * const *parm)
 	SDL_CALL SDL_EnableUNICODE(1);
 	
 	#ifdef N3DS
+	printf("**** Starting OpenTTD 0.7.0 ****\n");
+	printf("Don't worry if you get a \"Game Load Failed\" error.That's just the title screen savegame.\n\n");
 	// Enable the 3DS's controls to be used as a joystick.
 	_3ds_joystick = SDL_JoystickOpen(0);
 	SDL_JoystickEventState(SDL_ENABLE);
